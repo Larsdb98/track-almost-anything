@@ -6,6 +6,7 @@ from track_almost_anything._logging import (
 from pydantic import BaseModel, field_validator
 from pathlib import Path
 from typing import List
+import os
 
 
 class ImageSequenceConfig(BaseModel):

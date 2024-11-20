@@ -33,7 +33,7 @@ def configure_logger(log_level, log_dir: str = ""):
         _logger.setLevel(log_level)
 
         if log_dir:
-            log_file_out = os.path.join(log_dir, "track.log")
+            log_file_out = os.path.join(log_dir, "tracker.log")
             log_file_handler = logging.FileHandler(log_file_out)
 
             log_file_handler.setLevel(log_level)

@@ -23,6 +23,7 @@ This Python-based software allows users to track various items or objects via a 
     ```zsh
     poetry shell
     pip install ultralytics
+    pip install torch
     ```
 
 ### Developing the UI

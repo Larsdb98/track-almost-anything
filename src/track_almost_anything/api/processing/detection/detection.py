@@ -9,12 +9,14 @@ from track_almost_anything._logging import log_info, log_debug
 import numpy as np
 from ultralytics import YOLO
 from pydantic import BaseModel
-from typing import Tuple
+from typing import Tuple, List, Dict
 
 
 class ObjectDetectionInferenceConfig(BaseModel):
     image_dimensions: Tuple[int, int]
-    roi: Tuple[int, int, int, int]  # xyxy
+    boxes: List[Tuple[float, float, float, float]]  # xyxy
+    classes: List[int]
+    names: Dict[int, str]
 
 
 class ObjectDetection:
@@ -52,10 +54,10 @@ class ObjectDetection:
     def unpack_yolo_results(self, results):
         boxes = results[0].boxes.xywh.cpu()
         clss = results[0].boxes.cls.cpu().tolist()
-        names = results[0].boxes
-        print(f"Boxes: {boxes}")
-        print(f"Boxes: {clss}")
-        print(f"Boxes: {names}")
+        names = results[0].names
+        print(f"Boxes: {boxes}. Type: {type(boxes)}")
+        print(f"Classes: {clss}. Type: {type(clss)}")
+        print(f"Names of Classes: {names}. Type: {type(names)}")
 
     def destroy(self) -> None:  # TODO: properly free up gpu
         del self.detector

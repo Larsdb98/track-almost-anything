@@ -168,3 +168,4 @@ cython_debug/
 # Custom directories
 
 resources/detection_models/
+tests_and_extras_taa/

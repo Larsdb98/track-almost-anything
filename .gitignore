@@ -164,7 +164,7 @@ cython_debug/
 # Custom files
 
 *.pt
-
+*.DS_Store
 # Custom directories
 
 resources/detection_models/

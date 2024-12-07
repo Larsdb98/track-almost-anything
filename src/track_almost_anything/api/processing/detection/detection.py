@@ -19,7 +19,7 @@ class ObjectDetectionInferenceConfig(BaseModel):
     names: Dict[int, str]
 
 
-class ObjectDetection:
+class YoloObjectDetection:
     def __init__(
         self, detection_family: str = "yolov8", model_size: str = "n", device=None
     ):

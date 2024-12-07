@@ -26,7 +26,7 @@ class DetectionModel():
         log_info(f"Following YOLO object detection was set up: {self.detection_model_type}")
 
     def detect(self):
-        self.detector.predict
+        self._detector.predict
 
     def destroy(self):
         if self._detector is not None:

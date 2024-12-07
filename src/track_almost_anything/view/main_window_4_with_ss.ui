@@ -41,6 +41,40 @@ QLabel
 
 }
 
+/*------QMenuBar------*/
+
+QMenuBar
+{
+	color: #ffffff;
+}
+
+/*------QSlider-------*/
+QSlider
+{
+	background-color: #2d2d37;
+}
+
+
+/*-----QCheckBox------*/
+QCheckBox
+{
+	color: #c1c1c1;
+	background-color: #2d2d37;
+}
+
+/*------QComboBox-------*/
+QComboBox
+{
+	background-color: #2d2d37;
+	color: #c1c1c1;
+}
+
+/*-------QSpinBox-------*/
+QSpinBox
+{
+	color: #c1c1c1;
+}
+
 
 /*-----QPushButton-----*/
 QPushButton
@@ -222,12 +256,14 @@ QTabBar::tab:top, QTabBar::tab:bottom
 QTabBar::tab:hover 
 {
     color: #DDD;
+	background-color: #454545;
 
 }
 
 QTabBar::tab:selected:hover
 {
 	color: #000000;
+	background-color: #ffaf5d;
 }
 
 
@@ -463,7 +499,7 @@ QScrollBar::sub-page:vertical
              <x>0</x>
              <y>0</y>
              <width>298</width>
-             <height>884</height>
+             <height>911</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -521,11 +557,11 @@ QScrollBar::sub-page:vertical
                 <widget class="QComboBox" name="combo_detection_algo"/>
                </item>
                <item>
-                <widget class="QWidget" name="widget_items_to_detect" native="true">
+                <widget class="QGroupBox" name="groupBox_items_to_detect">
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
-                   <height>50</height>
+                   <height>80</height>
                   </size>
                  </property>
                  <property name="maximumSize">
@@ -536,16 +572,16 @@ QScrollBar::sub-page:vertical
                  </property>
                  <layout class="QGridLayout" name="gridLayout">
                   <property name="leftMargin">
-                   <number>0</number>
+                   <number>12</number>
                   </property>
                   <property name="topMargin">
-                   <number>0</number>
+                   <number>6</number>
                   </property>
                   <property name="rightMargin">
-                   <number>0</number>
+                   <number>12</number>
                   </property>
                   <property name="bottomMargin">
-                   <number>0</number>
+                   <number>12</number>
                   </property>
                   <item row="2" column="2">
                    <widget class="QPushButton" name="button_none">
@@ -594,17 +630,17 @@ QScrollBar::sub-page:vertical
                 </widget>
                </item>
                <item>
-                <widget class="QWidget" name="active_detection_items_controller" native="true">
+                <widget class="QGroupBox" name="active_detection_items_controller">
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
-                   <height>50</height>
+                   <height>55</height>
                   </size>
                  </property>
                  <property name="maximumSize">
                   <size>
                    <width>16777215</width>
-                   <height>50</height>
+                   <height>55</height>
                   </size>
                  </property>
                  <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -661,7 +697,7 @@ QScrollBar::sub-page:vertical
                 </widget>
                </item>
                <item>
-                <widget class="QWidget" name="widget_detection_confidence" native="true">
+                <widget class="QGroupBox" name="groupBox_detection_confidence">
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
@@ -691,6 +727,18 @@ QScrollBar::sub-page:vertical
                   </item>
                   <item row="1" column="0" colspan="2">
                    <widget class="QSlider" name="slider_detection_confidence">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>30</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>40</height>
+                     </size>
+                    </property>
                     <property name="orientation">
                      <enum>Qt::Orientation::Horizontal</enum>
                     </property>
@@ -754,7 +802,7 @@ QScrollBar::sub-page:vertical
                 </widget>
                </item>
                <item>
-                <widget class="QWidget" name="widget_number_generations" native="true">
+                <widget class="QGroupBox" name="groupBox_number_generations">
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
@@ -793,7 +841,10 @@ QScrollBar::sub-page:vertical
                      <bool>false</bool>
                     </property>
                     <property name="maximum">
-                     <number>30</number>
+                     <number>29</number>
+                    </property>
+                    <property name="value">
+                     <number>5</number>
                     </property>
                    </widget>
                   </item>
@@ -878,7 +929,7 @@ QScrollBar::sub-page:vertical
              <x>0</x>
              <y>0</y>
              <width>298</width>
-             <height>884</height>
+             <height>911</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -939,17 +990,17 @@ QScrollBar::sub-page:vertical
                 </widget>
                </item>
                <item>
-                <widget class="QWidget" name="widget_roi_control" native="true">
+                <widget class="QGroupBox" name="groupBox_roi_control">
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
-                   <height>50</height>
+                   <height>55</height>
                   </size>
                  </property>
                  <property name="maximumSize">
                   <size>
                    <width>16777215</width>
-                   <height>50</height>
+                   <height>55</height>
                   </size>
                  </property>
                  <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -1052,7 +1103,6 @@ QScrollBar::sub-page:vertical
    <addaction name="menu_pesentation"/>
    <addaction name="menu_help"/>
   </widget>
-  <widget class="QStatusBar" name="status_bar"/>
   <action name="action_save">
    <property name="text">
     <string>Save</string>

@@ -1,32 +1,46 @@
-from track_almost_anything.api.processing.detection import YoloObjectDetection
-from track_almost_anything.api.processing.utils import (
-    DETECTION_MODELS,
+from track_almost_anything.api.processing.detection import (
+    YoloObjectDetection,
+    ObjectDetectionConfig,
+)
+from ..api.processing.utils import (
+    DETECTION_MODELS_CHECKPOINTS,
     DETECTION_FAMILIES,
     TorchBackend,
 )
 
 from track_almost_anything._logging import log_info, log_debug, log_error
 
+import numpy as np
 
-class DetectionModel():
-    def __init__(self, detection_model_type: str, detection_model_confidence: float):
-        self.detection_model_type = detection_model_type
-        self.detection_family = "yolo"
-        self.detection_confidence = detection_model_confidence
-        
+
+class DetectionModel:
+    def __init__(self):
+        self.detection_family = ""
+        self.detection_model_type = ""
+        self.model_size = ""
+
+        self.detection_confidence = 0.0
+
         self._detector = None
         self._detection_backend = TorchBackend()
 
-    def setup_yolo(self):
+    def setup_yolo(self, detection_submodel: str, model_size: str = "n"):
         self._detector = YoloObjectDetection(
-            detection_family=self.detection_model_type,
-            model_size="n",
+            detection_family=detection_submodel,
+            model_size=model_size,
             device=self._detection_backend.get(),
         )
-        log_info(f"Following YOLO object detection was set up: {self.detection_model_type}")
+        log_info(f"YOLO object detection was set up: {self.detection_model_type}")
 
-    def detect(self):
-        self._detector.predict
+    def update_detection_config(self, detection_config: ObjectDetectionConfig):
+        self.detection_family = detection_config.family
+        self.detection_model_type = detection_config.model
+        self.model_size = detection_config.model_size
+        self.detection_confidence = detection_config.confidence
+
+    def detect(self, image: np.ndarray):
+        results = self._detector.predict(image=image)
+        return results
 
     def destroy(self):
         if self._detector is not None:

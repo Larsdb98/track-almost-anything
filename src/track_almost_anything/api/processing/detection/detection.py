@@ -1,14 +1,14 @@
 from track_almost_anything import PATH_TO_DETECTION_MODELS
 from track_almost_anything.api.processing.utils import (
     TorchBackend,
-    DETECTION_MODELS,
+    DETECTION_MODELS_CHECKPOINTS,
     DETECTION_FAMILIES,
 )
 from track_almost_anything._logging import log_info, log_debug
 
 import numpy as np
 from ultralytics import YOLO
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Tuple, List, Dict
 
 
@@ -17,6 +17,13 @@ class ObjectDetectionInferenceConfig(BaseModel):
     boxes: List[Tuple[float, float, float, float]]  # xyxy
     classes: List[int]
     names: Dict[int, str]
+
+
+class ObjectDetectionConfig(BaseModel):
+    family: str
+    model: str
+    model_size: str = Field(type=str, default="n")
+    confidence: float = Field(type=float, default=0.8)
 
 
 class YoloObjectDetection:
@@ -37,7 +44,7 @@ class YoloObjectDetection:
             )
 
     def set_yolo_detector(self, detection_family: str, model_size: str):
-        detection_model = DETECTION_MODELS[detection_family][model_size]
+        detection_model = DETECTION_MODELS_CHECKPOINTS[detection_family][model_size]
         detection_model_path = PATH_TO_DETECTION_MODELS / detection_model
 
         detector = YOLO(detection_model_path)

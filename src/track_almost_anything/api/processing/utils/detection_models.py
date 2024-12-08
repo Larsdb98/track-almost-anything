@@ -1,6 +1,8 @@
-DETECTION_FAMILIES = {"yolo": ["yolov5", "yolov8"]}
+DETECTION_FAMILIES = ["yolo", "mediapipe"]
 
-DETECTION_MODELS = {
+YOLO_DETECTION_MODELS = ["yolov5", "yolov8"]
+
+DETECTION_MODELS_CHECKPOINTS = {
     "yolov5": {
         "s": "yolov5su.pt",
         "n": "yolov5nu.pt",

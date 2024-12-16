@@ -1,6 +1,6 @@
-DETECTION_FAMILIES = ["yolo", "mediapipe"]
-
 YOLO_DETECTION_MODELS = ["yolov5", "yolov8"]
+
+DETECTION_FAMILIES = {"yolo": YOLO_DETECTION_MODELS, "mediapipe": ["hands"]}
 
 DETECTION_MODELS_CHECKPOINTS = {
     "yolov5": {

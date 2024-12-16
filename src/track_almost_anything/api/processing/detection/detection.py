@@ -22,7 +22,7 @@ class ObjectDetectionInferenceConfig(BaseModel):
 class ObjectDetectionConfig(BaseModel):
     family: str
     model: str
-    model_size: str = Field(type=str, default="n")
+    modelSize: str = Field(type=str, default="n")
     confidence: float = Field(type=float, default=0.8)
 
 

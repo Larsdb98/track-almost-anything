@@ -63,9 +63,11 @@ class YoloObjectDetection:
         return detector
 
     def predict(
-        self, image: np.ndarray, inference_config: ObjectDetectionInferenceConfig = None
+        self,
+        image_rgb: np.ndarray,
+        inference_config: ObjectDetectionInferenceConfig = None,
     ):
-        results = self.detector(image)
+        results = self.detector(image_rgb)
         return results
 
     def unpack_yolo_results(self, results):
@@ -88,7 +90,9 @@ class YoloObjectDetection:
         )
         return object_detection_results
 
-    def draw_yolo_detections(self, image: np.ndarray, results: ObjectDetectionResults):
+    def draw_yolo_detections(
+        self, image_rgb: np.ndarray, results: ObjectDetectionResults
+    ):
         for box, cls in zip(results.boxes, results.classes):
             # Extract box coordinates in xyxy format
             x1, y1, x2, y2 = map(int, box)
@@ -97,7 +101,7 @@ class YoloObjectDetection:
 
             color = (0, 255, 0)
 
-            cv2.rectangle(image, (x1, y1), (x2, y2), color, 2)
+            cv2.rectangle(image_rgb, (x1, y1), (x2, y2), color, 2)
 
             label = f"{class_name}"
 
@@ -107,7 +111,7 @@ class YoloObjectDetection:
 
             # Draw the text background rectangle for better visibility
             cv2.rectangle(
-                image,
+                image_rgb,
                 (text_x, text_y - text_size[1]),
                 (text_x + text_size[0], text_y),
                 color,
@@ -115,7 +119,7 @@ class YoloObjectDetection:
             )
 
             cv2.putText(
-                image,
+                image_rgb,
                 label,
                 (text_x, text_y),
                 cv2.FONT_HERSHEY_SIMPLEX,
@@ -124,8 +128,8 @@ class YoloObjectDetection:
                 1,
                 cv2.LINE_AA,
             )
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        return image
+        image_rgb = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2RGB)
+        return image_rgb
 
     def destroy(self) -> None:  # TODO: properly free up gpu
         del self.detector

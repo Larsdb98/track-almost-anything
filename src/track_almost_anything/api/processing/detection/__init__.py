@@ -1,4 +1,6 @@
-from .detection import YoloObjectDetection, ObjectDetectionConfig
+from .yolo_detection import YoloObjectDetection, ObjectDetectionConfig
+from .mp_hands_detection import MPHandsDetection
+
 from ..utils.detection_models import (
     DETECTION_FAMILIES,
     YOLO_DETECTION_MODELS,

@@ -23,8 +23,13 @@ def main():
     for i, img_path in enumerate(sequence_config.img_paths):
         img = load_image_rgb(img_path)
 
-        results = detector.predict(image=img)
-        detector.unpack_yolo_results(results)
+        raw_results = detector.predict(image=img)
+        detection_results = detector.yolo_results_to_cpu(raw_results)
+        res_image = detector.draw_yolo_detections(img, results=detection_results)
+
+        cv2.imshow("YOLO Object Detections", res_image)
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            break
 
 
 if __name__ == "__main__":

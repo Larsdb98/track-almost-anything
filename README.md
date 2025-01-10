@@ -4,7 +4,7 @@ This Python-based software allows users to track various items or objects via a 
 
 ### Installation
 
-1. Install [poetry][https://python-poetry.org]
+1. Install [poetry](https://python-poetry.org)
 
 2. Clone the project
 

@@ -6,4 +6,6 @@ from ..utils.detection_models import (
     YOLO_DETECTION_MODELS,
     DETECTION_MODELS_CHECKPOINTS,
 )
+
 from .yolo_utils import YOLO_CLASS_DICT
+from .mp_utils import MP_HANDS_LANDMARKS, MP_POSE_LANDMARKS

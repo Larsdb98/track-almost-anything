@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1420</width>
-    <height>1091</height>
+    <width>1421</width>
+    <height>1058</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -361,7 +361,7 @@ QScrollBar::sub-page:vertical
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox">
+        <widget class="QComboBox" name="comboBox_image_source">
          <property name="minimumSize">
           <size>
            <width>200</width>
@@ -498,8 +498,8 @@ QScrollBar::sub-page:vertical
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>298</width>
-             <height>911</height>
+             <width>293</width>
+             <height>926</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -555,6 +555,16 @@ QScrollBar::sub-page:vertical
                </item>
                <item>
                 <widget class="QComboBox" name="combo_detection_algo"/>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_model_type">
+                 <property name="text">
+                  <string>Model Type</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="combo_model_type"/>
                </item>
                <item>
                 <widget class="QGroupBox" name="groupBox_items_to_detect">
@@ -701,7 +711,7 @@ QScrollBar::sub-page:vertical
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
-                   <height>65</height>
+                   <height>70</height>
                   </size>
                  </property>
                  <property name="maximumSize">
@@ -715,13 +725,6 @@ QScrollBar::sub-page:vertical
                    <widget class="QLabel" name="label_detection_confidence">
                     <property name="text">
                      <string>Detection Confidence:</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QLabel" name="label_value_detection_confidence">
-                    <property name="text">
-                     <string>VALUE</string>
                     </property>
                    </widget>
                   </item>
@@ -744,6 +747,47 @@ QScrollBar::sub-page:vertical
                     </property>
                    </widget>
                   </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="label_value_detection_confidence">
+                    <property name="text">
+                     <string>VALUE</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QGroupBox" name="groupBox_number_of_objects">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>42</height>
+                  </size>
+                 </property>
+                 <layout class="QHBoxLayout" name="horizontalLayout_6">
+                  <property name="leftMargin">
+                   <number>6</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>6</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>6</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>6</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_number_of_objects">
+                    <property name="text">
+                     <string>Number of Objects</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QSpinBox" name="spinbox_number_of_objects"/>
+                  </item>
                  </layout>
                 </widget>
                </item>
@@ -765,7 +809,7 @@ QScrollBar::sub-page:vertical
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>120</height>
+                <height>155</height>
                </size>
               </property>
               <property name="maximumSize">
@@ -929,7 +973,7 @@ QScrollBar::sub-page:vertical
              <x>0</x>
              <y>0</y>
              <width>298</width>
-             <height>911</height>
+             <height>878</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -1070,7 +1114,7 @@ QScrollBar::sub-page:vertical
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1420</width>
+     <width>1421</width>
      <height>21</height>
     </rect>
    </property>
@@ -1121,7 +1165,7 @@ QScrollBar::sub-page:vertical
  </widget>
  <tabstops>
   <tabstop>tab_widget</tabstop>
-  <tabstop>comboBox</tabstop>
+  <tabstop>comboBox_image_source</tabstop>
   <tabstop>button_start</tabstop>
   <tabstop>button_pause</tabstop>
   <tabstop>button_stop</tabstop>

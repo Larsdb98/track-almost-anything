@@ -7,7 +7,6 @@ from ..api.processing.utils import (
     DETECTION_FAMILIES,
     TorchBackend,
 )
-
 from track_almost_anything._logging import log_info, log_debug, log_error
 
 import numpy as np
@@ -15,11 +14,10 @@ import numpy as np
 
 class DetectionModel:
     def __init__(self):
-        self.detection_family = ""
-        self.detection_model_type = ""
+        self.detection_model = ""
         self.model_size = ""
 
-        self.detection_confidence = 0.0
+        self.detection_confidence = 0.8
 
         self._detector = None
         self._detection_backend = TorchBackend()
@@ -33,8 +31,7 @@ class DetectionModel:
         log_info(f"YOLO object detection was set up: {self.detection_model_type}")
 
     def update_detection_config(self, detection_config: ObjectDetectionConfig):
-        self.detection_family = detection_config.family
-        self.detection_model_type = detection_config.model
+        self.detection_model = detection_config.model
         self.model_size = detection_config.model_size
         self.detection_confidence = detection_config.confidence
 

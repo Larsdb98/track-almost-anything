@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'main_window.ui'
+## Form generated from reading UI file 'main_windowPOBUKI.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.0
 ##
@@ -28,7 +28,7 @@ class Ui_MainWindow(object):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.setEnabled(True)
-        MainWindow.resize(1420, 1091)
+        MainWindow.resize(1421, 1058)
         MainWindow.setMouseTracking(False)
         MainWindow.setStyleSheet(u"\n"
 "/*-----QWidget-----*/\n"
@@ -362,11 +362,11 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_2.addWidget(self.label_source)
 
-        self.comboBox = QComboBox(self.tool_widget)
-        self.comboBox.setObjectName(u"comboBox")
-        self.comboBox.setMinimumSize(QSize(200, 0))
+        self.comboBox_image_source = QComboBox(self.tool_widget)
+        self.comboBox_image_source.setObjectName(u"comboBox_image_source")
+        self.comboBox_image_source.setMinimumSize(QSize(200, 0))
 
-        self.horizontalLayout_2.addWidget(self.comboBox)
+        self.horizontalLayout_2.addWidget(self.comboBox_image_source)
 
         self.button_start = QPushButton(self.tool_widget)
         self.button_start.setObjectName(u"button_start")
@@ -429,7 +429,7 @@ class Ui_MainWindow(object):
         self.scroll_detection_options.setWidgetResizable(True)
         self.scroll_area_widget_contents = QWidget()
         self.scroll_area_widget_contents.setObjectName(u"scroll_area_widget_contents")
-        self.scroll_area_widget_contents.setGeometry(QRect(0, 0, 298, 911))
+        self.scroll_area_widget_contents.setGeometry(QRect(0, 0, 293, 926))
         self.verticalLayout = QVBoxLayout(self.scroll_area_widget_contents)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.groupBox_detection_options = QGroupBox(self.scroll_area_widget_contents)
@@ -455,6 +455,16 @@ class Ui_MainWindow(object):
         self.combo_detection_algo.setObjectName(u"combo_detection_algo")
 
         self.verticalLayout_5.addWidget(self.combo_detection_algo)
+
+        self.label_model_type = QLabel(self.groupBox_detection_options)
+        self.label_model_type.setObjectName(u"label_model_type")
+
+        self.verticalLayout_5.addWidget(self.label_model_type)
+
+        self.combo_model_type = QComboBox(self.groupBox_detection_options)
+        self.combo_model_type.setObjectName(u"combo_model_type")
+
+        self.verticalLayout_5.addWidget(self.combo_model_type)
 
         self.groupBox_items_to_detect = QGroupBox(self.groupBox_detection_options)
         self.groupBox_items_to_detect.setObjectName(u"groupBox_items_to_detect")
@@ -524,7 +534,7 @@ class Ui_MainWindow(object):
 
         self.groupBox_detection_confidence = QGroupBox(self.groupBox_detection_options)
         self.groupBox_detection_confidence.setObjectName(u"groupBox_detection_confidence")
-        self.groupBox_detection_confidence.setMinimumSize(QSize(0, 65))
+        self.groupBox_detection_confidence.setMinimumSize(QSize(0, 70))
         self.groupBox_detection_confidence.setMaximumSize(QSize(16777215, 65))
         self.gridLayout_2 = QGridLayout(self.groupBox_detection_confidence)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
@@ -532,11 +542,6 @@ class Ui_MainWindow(object):
         self.label_detection_confidence.setObjectName(u"label_detection_confidence")
 
         self.gridLayout_2.addWidget(self.label_detection_confidence, 0, 0, 1, 1)
-
-        self.label_value_detection_confidence = QLabel(self.groupBox_detection_confidence)
-        self.label_value_detection_confidence.setObjectName(u"label_value_detection_confidence")
-
-        self.gridLayout_2.addWidget(self.label_value_detection_confidence, 0, 1, 1, 1)
 
         self.slider_detection_confidence = QSlider(self.groupBox_detection_confidence)
         self.slider_detection_confidence.setObjectName(u"slider_detection_confidence")
@@ -546,8 +551,32 @@ class Ui_MainWindow(object):
 
         self.gridLayout_2.addWidget(self.slider_detection_confidence, 1, 0, 1, 2)
 
+        self.label_value_detection_confidence = QLabel(self.groupBox_detection_confidence)
+        self.label_value_detection_confidence.setObjectName(u"label_value_detection_confidence")
+
+        self.gridLayout_2.addWidget(self.label_value_detection_confidence, 0, 1, 1, 1)
+
 
         self.verticalLayout_5.addWidget(self.groupBox_detection_confidence)
+
+        self.groupBox_number_of_objects = QGroupBox(self.groupBox_detection_options)
+        self.groupBox_number_of_objects.setObjectName(u"groupBox_number_of_objects")
+        self.groupBox_number_of_objects.setMinimumSize(QSize(0, 42))
+        self.horizontalLayout_6 = QHBoxLayout(self.groupBox_number_of_objects)
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.horizontalLayout_6.setContentsMargins(6, 6, 6, 6)
+        self.label_number_of_objects = QLabel(self.groupBox_number_of_objects)
+        self.label_number_of_objects.setObjectName(u"label_number_of_objects")
+
+        self.horizontalLayout_6.addWidget(self.label_number_of_objects)
+
+        self.spinbox_number_of_objects = QSpinBox(self.groupBox_number_of_objects)
+        self.spinbox_number_of_objects.setObjectName(u"spinbox_number_of_objects")
+
+        self.horizontalLayout_6.addWidget(self.spinbox_number_of_objects)
+
+
+        self.verticalLayout_5.addWidget(self.groupBox_number_of_objects)
 
 
         self.verticalLayout.addWidget(self.groupBox_detection_options)
@@ -562,7 +591,7 @@ class Ui_MainWindow(object):
         self.groupBox_tracking_options = QGroupBox(self.scroll_area_widget_contents)
         self.groupBox_tracking_options.setObjectName(u"groupBox_tracking_options")
         self.groupBox_tracking_options.setEnabled(True)
-        self.groupBox_tracking_options.setMinimumSize(QSize(0, 120))
+        self.groupBox_tracking_options.setMinimumSize(QSize(0, 155))
         self.groupBox_tracking_options.setMaximumSize(QSize(16777215, 16777215))
         self.verticalLayout_4 = QVBoxLayout(self.groupBox_tracking_options)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -641,7 +670,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 298, 911))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 298, 878))
         self.verticalLayout_6 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.groupBox_roi = QGroupBox(self.scrollAreaWidgetContents)
@@ -711,7 +740,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.global_widget)
         self.menu_bar = QMenuBar(MainWindow)
         self.menu_bar.setObjectName(u"menu_bar")
-        self.menu_bar.setGeometry(QRect(0, 0, 1420, 21))
+        self.menu_bar.setGeometry(QRect(0, 0, 1421, 21))
         self.menu_file = QMenu(self.menu_bar)
         self.menu_file.setObjectName(u"menu_file")
         self.menu_edit = QMenu(self.menu_bar)
@@ -721,8 +750,8 @@ class Ui_MainWindow(object):
         self.menu_pesentation = QMenu(self.menu_bar)
         self.menu_pesentation.setObjectName(u"menu_pesentation")
         MainWindow.setMenuBar(self.menu_bar)
-        QWidget.setTabOrder(self.tab_widget, self.comboBox)
-        QWidget.setTabOrder(self.comboBox, self.button_start)
+        QWidget.setTabOrder(self.tab_widget, self.comboBox_image_source)
+        QWidget.setTabOrder(self.comboBox_image_source, self.button_start)
         QWidget.setTabOrder(self.button_start, self.button_pause)
         QWidget.setTabOrder(self.button_pause, self.button_stop)
         QWidget.setTabOrder(self.button_stop, self.button_load_video)
@@ -761,6 +790,7 @@ class Ui_MainWindow(object):
         self.button_load_video.setText(QCoreApplication.translate("MainWindow", u"Load Video", None))
         self.label_detection_options.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:18pt;\">Detection Options</span></p></body></html>", None))
         self.label_detection_algo.setText(QCoreApplication.translate("MainWindow", u"Detection Algorithm", None))
+        self.label_model_type.setText(QCoreApplication.translate("MainWindow", u"Model Type", None))
         self.button_none.setText(QCoreApplication.translate("MainWindow", u"None", None))
         self.button_all.setText(QCoreApplication.translate("MainWindow", u"All", None))
         self.label_items_to_detect.setText(QCoreApplication.translate("MainWindow", u"Items to Detect", None))
@@ -769,6 +799,7 @@ class Ui_MainWindow(object):
         self.label_active_detection_items.setText(QCoreApplication.translate("MainWindow", u"Active", None))
         self.label_detection_confidence.setText(QCoreApplication.translate("MainWindow", u"Detection Confidence:", None))
         self.label_value_detection_confidence.setText(QCoreApplication.translate("MainWindow", u"VALUE", None))
+        self.label_number_of_objects.setText(QCoreApplication.translate("MainWindow", u"Number of Objects", None))
         self.label_tracking_options.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:18pt;\">Tracking Options</span></p></body></html>", None))
         self.checkbox_tracking_enabled.setText(QCoreApplication.translate("MainWindow", u"Enabled", None))
         self.label_number_generations.setText(QCoreApplication.translate("MainWindow", u"Number of Generations", None))

@@ -30,9 +30,8 @@ class ObjectDetectionResults(BaseModel):
 
 
 class ObjectDetectionConfig(BaseModel):
-    family: str
     model: str
-    modelSize: str = Field(type=str, default="n")
+    model_size: str = Field(type=str, default="n")
     confidence: float = Field(type=float, default=0.8)
 
 
@@ -46,7 +45,7 @@ class YoloObjectDetection:
             self.device = backend.get()
         else:
             self.device = device
-        log_debug(f"Detection :: init - Using detection backend: {self.device}")
+        log_debug(f"Detection :: YOLO :: init - Using detection backend: {self.device}")
 
         if detection_family in DETECTION_FAMILIES["yolo"]:
             self.detector = self.set_yolo_detector(

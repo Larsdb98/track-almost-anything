@@ -23,7 +23,7 @@ def main():
     for i, img_path in enumerate(sequence_config.img_paths):
         img = load_image_rgb(img_path)
 
-        raw_results = detector.predict(image=img)
+        raw_results = detector.predict(image_rgb=img)
         detection_results = detector.yolo_results_to_cpu(raw_results)
         res_image = detector.draw_yolo_detections(img, results=detection_results)
 

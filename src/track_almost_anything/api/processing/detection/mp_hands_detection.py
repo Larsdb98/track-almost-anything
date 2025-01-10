@@ -41,3 +41,6 @@ class MPHandsDetection:
                     image_rgb, handLms, self.mp_hands.HAND_CONNECTIONS
                 )
         return image_rgb
+
+    def destroy(self):
+        del self.detector

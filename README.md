@@ -21,9 +21,8 @@ This Python-based software allows users to track various items or objects via a 
 4. Some packages will be missing because they can't be tracked properly with poetry. These have to be manually installed:
 
     ```zsh
-    poetry shell
-    pip install ultralytics
-    pip install torch
+    poetry run pip install ultralytics
+    poetry run pip install torch
     ```
 
 ### Developing the UI

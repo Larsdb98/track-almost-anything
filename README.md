@@ -25,6 +25,20 @@ This Python-based software allows users to track various items or objects via a 
     poetry run pip install torch
     ```
 
+### Run
+To run the app, use the following command line:
+```zsh
+    poetry run tracker
+```
+To run the app with debug logging active, use the following command:
+```zsh
+    poetry run tracker --log-level DEBUG
+```
+For the complete list of arguments upon launch, run:
+```zsh
+    poetry run tracker -h
+```
+
 ### Developing the UI
 
 I'm a robotics engineer, not a frontend developer. So I'm cutting corners and using Qt Designer to create a UI file that I then convert to Python.

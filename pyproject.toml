@@ -28,4 +28,4 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts] # entry points for the app
-track-almost-anything = "src.track_almost_anything.track_almost_anything:main"
+tracker = "src.track_almost_anything.track_almost_anything:main"

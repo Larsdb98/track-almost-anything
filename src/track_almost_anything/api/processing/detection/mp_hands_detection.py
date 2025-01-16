@@ -34,11 +34,13 @@ class MPHandsDetection:
     def debug_draw_hands(
         self, image_rgb: np.ndarray, mp_detection_results_raw
     ) -> np.ndarray:
-        if mp_detection_results_raw.multi_hand_landmarks:
-            for handLms in mp_detection_results_raw.multi_hand_landmarks:
+        if (
+            mp_detection_results_raw.multi_hand_landmarks  # and hasattr(mp_detection_results_raw, "multi_hand_landmarks")
+        ):
+            for hand_landmarks in mp_detection_results_raw.multi_hand_landmarks:
 
                 self.mp_draw.draw_landmarks(
-                    image_rgb, handLms, self.mp_hands.HAND_CONNECTIONS
+                    image_rgb, hand_landmarks, self.mp_hands.HAND_CONNECTIONS
                 )
         return image_rgb
 

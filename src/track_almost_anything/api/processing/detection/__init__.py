@@ -1,5 +1,6 @@
 from .yolo_detection import YoloObjectDetection, ObjectDetectionConfig
 from .mp_hands_detection import MPHandsDetection
+from .mp_pose_detection import MPPoseDetection
 
 from ..utils.detection_models import (
     DETECTION_FAMILIES,

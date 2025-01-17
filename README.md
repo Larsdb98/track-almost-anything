@@ -2,7 +2,10 @@
 
 This Python-based software allows users to track various items or objects via a camera. This software will have various object detection algorithms (from Ultralysics' YOLO, Google's mediapipe, etc.) alongside tracking algorithms.
 
-### Installation
+![](resources/extras/tracker_screenshot.png)
+
+
+## Installation
 
 1. Install [poetry](https://python-poetry.org)
 
@@ -25,7 +28,8 @@ This Python-based software allows users to track various items or objects via a 
     poetry run pip install torch
     ```
 
-### Run
+## Running The Tracker
+
 To run the app, use the following command line:
 ```zsh
     poetry run tracker

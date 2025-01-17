@@ -25,7 +25,6 @@ class TableViewController:
         self.table_view.horizontalHeader().hide()
 
     def populate_table(self, items: List[str]) -> None:
-        """Populate the table with a list of text items."""
         self.model.setRowCount(0)
         for item in items:
             standard_item = QStandardItem(item)
@@ -48,11 +47,13 @@ class TableViewController:
         ]
         return selected_items
 
-    # Only serves to test the functionality of selecting items in the table.
-    def print_selected_rows(self) -> None:
-        """Print the currently selected rows."""
-        selected_indexes = self.table_view.selectionModel().selectedRows()
-        selected_items = [
-            self.model.itemFromIndex(index).text() for index in selected_indexes
+    def get_all_items(self) -> List[str]:
+        all_items = [
+            self.model.item(row).text() for row in range(self.model.rowCount())
         ]
-        log_debug("Selected items:", selected_items)
+        return all_items
+
+    def remove_selected_items(self) -> None:
+        selected_indexes = self.table_view.selectionModel().selectedRows()
+        for index in sorted(selected_indexes, key=lambda x: x.row(), reverse=True):
+            self.model.removeRow(index.row())

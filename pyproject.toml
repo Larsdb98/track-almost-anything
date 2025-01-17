@@ -3,7 +3,7 @@ name = "track_almost_anything"
 version = "0.1.0"
 description = "Python-based software that implements modern  vision algorithms for detection and tracking."
 authors = ["Lars del Bubba <larsdb98@gmail.com>"]
-license = "BSD 3-Clause"
+license = "LGPL-3.0"
 readme = "README.md"
 
 [tool.poetry.dependencies]

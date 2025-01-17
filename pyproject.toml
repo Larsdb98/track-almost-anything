@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "track_almost_anything"
+version = "0.1.0"
+description = "Python-based software that implements modern  vision algorithms for detection and tracking."
+authors = ["Lars del Bubba <larsdb98@gmail.com>"]
+license = "BSD 3-Clause"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10, <3.13"
+numpy = "<2.0.0"
+scipy = "^1.14.1"
+pyside6 = "^6.8.0.2"
+pytest = "^8.3.3"
+ipykernel = "^6.29.5"
+pydantic = "^2.9.2"
+wheel = "^0.44.0"
+matplotlib = "^3.9.2"
+opencv-python = "^4.10.0.84"
+deep-sort-realtime = "^1.3.2"
+pandas = "^2.2.3"
+requests = "^2.32.3"
+mediapipe = "^0.10.20"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts] # entry points for the app
+tracker = "src.track_almost_anything.track_almost_anything:main"

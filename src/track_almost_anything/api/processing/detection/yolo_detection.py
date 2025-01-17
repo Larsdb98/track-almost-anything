@@ -1,7 +1,7 @@
 from track_almost_anything import PATH_TO_DETECTION_MODELS
 from track_almost_anything.api.processing.utils import (
     TorchBackend,
-    DETECTION_MODELS_CHECKPOINTS,
+    YOLO_DETECTION_MODELS_CHECKPOINTS,
     DETECTION_FAMILIES,
 )
 from track_almost_anything._logging import log_info, log_debug
@@ -53,7 +53,9 @@ class YoloObjectDetection:
             )
 
     def set_yolo_detector(self, detection_family: str, model_size: str):
-        detection_model = DETECTION_MODELS_CHECKPOINTS[detection_family][model_size]
+        detection_model = YOLO_DETECTION_MODELS_CHECKPOINTS[detection_family][
+            model_size
+        ]
         detection_model_path = PATH_TO_DETECTION_MODELS / detection_model
 
         detector = YOLO(detection_model_path)

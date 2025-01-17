@@ -3,10 +3,11 @@ from track_almost_anything.api.processing.detection import (
     ObjectDetectionConfig,
 )
 from ..api.processing.utils import (
-    DETECTION_MODELS_CHECKPOINTS,
-    DETECTION_FAMILIES,
+    YOLO_DETECTION_MODELS_CHECKPOINTS,
     TorchBackend,
 )
+from ..api.processing.detection import DETECTION_FAMILIES, YOLO_CLASS_LABEL_DICT
+
 from track_almost_anything._logging import log_info, log_debug, log_error
 
 import numpy as np
@@ -16,8 +17,12 @@ class DetectionModel:
     def __init__(self):
         self.detection_model = ""
         self.model_size = ""
+        self.max_number_items = 1
 
         self.detection_confidence = 0.8
+
+        self.items_to_detect = YOLO_CLASS_LABEL_DICT.keys()
+        self.active_items = []
 
         self._detector = None
         self._detection_backend = TorchBackend()

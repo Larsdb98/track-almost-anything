@@ -728,6 +728,13 @@ QScrollBar::sub-page:vertical
                     </property>
                    </widget>
                   </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="label_value_detection_confidence">
+                    <property name="text">
+                     <string>VALUE</string>
+                    </property>
+                   </widget>
+                  </item>
                   <item row="1" column="0" colspan="2">
                    <widget class="QSlider" name="slider_detection_confidence">
                     <property name="minimumSize">
@@ -744,13 +751,6 @@ QScrollBar::sub-page:vertical
                     </property>
                     <property name="orientation">
                      <enum>Qt::Orientation::Horizontal</enum>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QLabel" name="label_value_detection_confidence">
-                    <property name="text">
-                     <string>VALUE</string>
                     </property>
                    </widget>
                   </item>
@@ -834,7 +834,7 @@ QScrollBar::sub-page:vertical
                   </size>
                  </property>
                  <property name="text">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;Tracking Options&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;Tracking Options (YOLO)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                 </widget>
                </item>

@@ -15,7 +15,6 @@ def main() -> int:
 
     configure_logger(log_level=log_level, log_dir=log_dir)
     log_info("_______________ Track Almost Anything _______________")
-    log_info("App launched !")
 
     # App Singleton
     app = QtWidgets.QApplication(sys.argv)

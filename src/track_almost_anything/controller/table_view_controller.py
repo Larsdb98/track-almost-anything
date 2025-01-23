@@ -24,6 +24,8 @@ class TableViewController:
         self.table_view.horizontalHeader().setStretchLastSection(True)
         self.table_view.horizontalHeader().hide()
 
+        log_debug("Controller :: Table View Controller initialized successfully.")
+
     def populate_table(self, items: List[str]) -> None:
         self.model.setRowCount(0)
         for item in items:

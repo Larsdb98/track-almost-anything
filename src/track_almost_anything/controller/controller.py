@@ -8,8 +8,9 @@ class Controller:
     def __init__(self, model: Model, view: View):
         self.model = model
         self.view = view
-        log_debug("Controller initialized successfully.")
 
         self.detection_controller = DetectionController(
             detection_model=model.detection_model, view=view
         )
+
+        log_debug("Controller initialized successfully.")

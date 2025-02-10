@@ -27,5 +27,5 @@ mediapipe = "^0.10.20"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.scripts] # entry points for the app
+[tool.poetry.scripts] # entry point(s) for the app
 tracker = "src.track_almost_anything.track_almost_anything:main"

@@ -11,6 +11,8 @@ import multiprocessing
 from PySide6.QtCore import QTimer, QObject, Signal, Qt, QEvent
 from PySide6.QtGui import QPixmap
 from PySide6 import QtWidgets
+import numpy as np
+import cv2
 
 
 class DetectionController(QObject):
@@ -19,7 +21,9 @@ class DetectionController(QObject):
         self.detection_model = detection_model
         self.view = view
 
-        self.video_feed_current_pixmap = None
+        self.detection_current_pixmap = None
+        self.detection_current_image = None
+        self.live_view_size = None
 
         # All items table view
         self.all_items_table_view_controller = TableViewController(
@@ -81,11 +85,50 @@ class DetectionController(QObject):
             self.update_pixmap()
         return super().eventFilter(watched, event)
 
+    def update_live_view_pixmap(self, image: np.ndarray) -> None:
+        if self.detection_current_image:
+            live_view_image = self.image_to_live_view_pixmap(
+                image=self.detection_current_image
+            )
+
+    def image_to_live_view_pixmap(self, image: np.ndarray) -> np.ndarray:
+        live_width = self.view.ui.label_video_feed.size().width()
+        live_height = self.view.ui.label_video_feed.size().height()
+
+        img_height, img_width = image.shape[:2]
+
+        live_aspect = live_width / live_height
+        img_aspect = img_width / img_height
+
+        if img_aspect > live_aspect:
+            # Fit to width
+            new_width = live_width
+            new_height = int(live_width / img_aspect)
+        else:
+            # Fit to height
+            new_height = live_height
+            new_width = int(live_height * img_aspect)
+
+        resized_image = cv2.resize(
+            image, (new_width, new_height), interpolation=cv2.INTER_AREA
+        )
+        live_view_image = np.zeros((live_height, live_width, 3), dtype=np.uint8)
+        x_offset = (live_width - new_width) // 2
+        y_offset = (live_height - new_height) // 2
+
+        live_view_image[
+            y_offset : y_offset + new_height, x_offset : x_offset + new_width
+        ] = resized_image
+        return live_view_image
+
     def update_pixmap(self):
         # Update video feed QLabel weith a resized pixmap
-        if self.video_feed_current_pixmap:
+        if self.detection_current_pixmap:
             label_size = self.view.ui.label_video_feed.size()
-            scaled_pixmap = self.video_feed_current_pixmap.scaled(
+            log_debug(
+                f"Controller :: Detection Controller :: Live view size: {label_size.height()} & {label_size.width()}"
+            )
+            scaled_pixmap = self.detection_current_pixmap.scaled(
                 label_size,
                 Qt.KeepAspectRatio,
                 Qt.SmoothTransformation,
@@ -135,9 +178,9 @@ class DetectionController(QObject):
 
     def test_load_image_to_cam_view(self):
         image_loc = r"/Users/larsdelbubba/Desktop/Coding Projects/track-almost-anything/tests_and_extras_taa/taa_ai_gui_1.png"
-        self.video_feed_current_pixmap = QPixmap(image_loc)
+        self.detection_current_pixmap = QPixmap(image_loc)
         self.view.ui.label_video_feed.setPixmap(
-            self.video_feed_current_pixmap.scaled(
+            self.detection_current_pixmap.scaled(
                 self.view.ui.label_video_feed.size(),
                 Qt.KeepAspectRatio,
                 Qt.SmoothTransformation,

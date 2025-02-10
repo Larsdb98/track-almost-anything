@@ -47,7 +47,7 @@ For the complete list of arguments upon launch, run:
 
 ### Developing the UI
 
-I'm a robotics engineer, not a frontend developer. So I'm cutting corners and using Qt Designer to create a UI file that I then convert to Python.
+I'm using Qt Designer to create the UI files for this application. These UI files are then converted to a Python script using [pyside6-uic](https://doc.qt.io/qtforpython-6/tools/pyside-uic.html) conversion tool.
 
 To open Qt Designer within the poetry environment:
 

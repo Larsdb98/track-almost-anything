@@ -47,7 +47,8 @@ class YoloObjectDetection:
             self.device = device
         log_debug(f"Detection :: YOLO :: init - Using detection backend: {self.device}")
 
-        if detection_family in DETECTION_FAMILIES["yolo"]:
+        detection_model = detection_family + model_size
+        if detection_model in DETECTION_FAMILIES["yolo"]:
             self.detector = self.set_yolo_detector(
                 detection_family=detection_family, model_size=model_size
             )

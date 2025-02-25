@@ -121,8 +121,39 @@ class DetectionController(QObject):
         ] = resized_image
         return live_view_image
 
+    def resize_image_for_live_view(self, image: np.ndarray) -> np.ndarray:
+        live_width = self.view.ui.label_video_feed.size().width()
+        live_height = self.view.ui.label_video_feed.size().height()
+        img_height, img_width = image.shape[:2]
+
+        live_aspect = live_width / live_height
+        img_aspect = img_width / img_height
+
+        if img_aspect > live_aspect:
+            # Fit to width
+            new_width = live_width
+            new_height = int(live_width / img_aspect)
+        else:
+            # Fit to height
+            new_height = live_height
+            new_width = int(live_height * img_aspect)
+
+        resized_image = cv2.resize(
+            image, (new_width, new_height), interpolation=cv2.INTER_AREA
+        )
+        live_view_image = np.zeros((live_height, live_width, 3), dtype=np.uint8)
+
+        x_offset = (live_width - new_width) // 2
+        y_offset = (live_height - new_height) // 2
+
+        live_view_image[
+            y_offset : y_offset + new_height, x_offset : x_offset + new_width
+        ] = resized_image
+
+        return live_view_image
+
     def update_pixmap(self):
-        # Update video feed QLabel weith a resized pixmap
+        # Update video feed QLabel with a resized pixmap
         if self.detection_current_pixmap:
             label_size = self.view.ui.label_video_feed.size()
             log_debug(

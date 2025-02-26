@@ -23,7 +23,7 @@ def main() -> int:
     view = View(model=model)
     controller = Controller(model=model, view=view)
 
-    # Launch UI e
+    # Launch UI
     view.show()
     sys.exit(app.exec_())
 

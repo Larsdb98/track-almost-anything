@@ -7,6 +7,8 @@ from PySide6.QtGui import QPixmap
 import numpy as np
 import cv2
 
+# TODO: Implement logic for roi control
+
 
 class LiveViewController(QObject):
     def __init__(self, view: View):
@@ -14,14 +16,31 @@ class LiveViewController(QObject):
         self.view = view
 
         self.view.installEventFilter(self)
+        self.view.ui.label_video_feed.installEventFilter(self)
 
         self.detection_current_image = None
         self.detection_current_pixmap = None
+
+        self.last_resize_params = None
+
+        roi_point_1 = None
+        roi_point_2 = None
 
     def eventFilter(self, watched, event):
         if watched == self.view and event.type() == QEvent.Resize:
             # log_debug("Controller :: Detection Controller :: Resize event received.")
             self.update_pixmap()
+
+        if (
+            watched == self.view.ui.label_video_feed
+            and event.type() == QEvent.MouseButtonPress
+        ):
+            if event.button() == Qt.LeftButton:
+                x, y = event.position().toPoint().x(), event.position().toPoint().y()
+                # log_debug(
+                #     f"Controller :: LiveViewController: Left click event occured at [{x},{y}]"
+                # )
+                return True
         return super().eventFilter(watched, event)
 
     def resize_image_for_live_view(self, image: np.ndarray) -> np.ndarray:
@@ -33,11 +52,9 @@ class LiveViewController(QObject):
         img_aspect = img_width / img_height
 
         if img_aspect > live_aspect:
-            # Fit to width
             new_width = live_width
             new_height = int(live_width / img_aspect)
         else:
-            # Fit to height
             new_height = live_height
             new_width = int(live_height * img_aspect)
 
@@ -52,6 +69,16 @@ class LiveViewController(QObject):
         live_view_image[
             y_offset : y_offset + new_height, x_offset : x_offset + new_width
         ] = resized_image
+
+        # Save last resize parameters to avoid recomputing for roi
+        self.last_resize_params = {
+            "new_width": new_width,
+            "new_height": new_height,
+            "x_offset": x_offset,
+            "y_offset": y_offset,
+            "orig_width": img_width,
+            "orig_height": img_height,
+        }
 
         return live_view_image
 

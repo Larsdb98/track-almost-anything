@@ -2,7 +2,7 @@ from track_almost_anything._logging import (
     log_info,
     log_error,
     TrackerFileNotFoundError,
-    TrackerAlmostAnythingException,
+    TrackAlmostAnythingException,
 )
 
 
@@ -37,7 +37,7 @@ try:
 
     status = config_check(app_config=APP_CONFIG)
     if not status:
-        raise TrackerAlmostAnythingException("Invalid settings file !")
+        raise TrackAlmostAnythingException("Invalid settings file !")
     log_info(f"Loaded settings file from {config_file_path} successfully.")
 
 

@@ -6,19 +6,19 @@ _logger = logging.getLogger("TrackerLogger")
 __is_logger_configured__ = False
 
 
-class TrackerAlmostAnythingException(Exception):
+class TrackAlmostAnythingException(Exception):
     """Exception thrown by Track Almost Anything"""
 
     status_code = -1
 
 
-class TrackerFileNotFoundError(TrackerAlmostAnythingException):
+class TrackerFileNotFoundError(TrackAlmostAnythingException):
     """Exception thrown by Track Almost Anything"""
 
     status_code = 3
 
 
-class TrackerIncompatibleFileError(TrackerAlmostAnythingException):
+class TrackerIncompatibleFileError(TrackAlmostAnythingException):
     """No compatible image files have been found."""
 
     status_code = 3

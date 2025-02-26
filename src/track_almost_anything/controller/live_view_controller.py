@@ -6,6 +6,7 @@ from PySide6.QtCore import QObject, QEvent, Qt
 from PySide6.QtGui import QPixmap
 import numpy as np
 import cv2
+from typing import Tuple
 
 # TODO: Implement logic for roi control
 
@@ -23,8 +24,8 @@ class LiveViewController(QObject):
 
         self.last_resize_params = None
 
-        roi_point_1 = None
-        roi_point_2 = None
+        self.roi_point_1 = None  # TODO: By default make ROI the same size as image
+        self.roi_point_2 = None
 
     def eventFilter(self, watched, event):
         if watched == self.view and event.type() == QEvent.Resize:
@@ -37,9 +38,19 @@ class LiveViewController(QObject):
         ):
             if event.button() == Qt.LeftButton:
                 x, y = event.position().toPoint().x(), event.position().toPoint().y()
-                # log_debug(
-                #     f"Controller :: LiveViewController: Left click event occured at [{x},{y}]"
-                # )
+                self.roi_point_1 = (x, y)
+                log_debug(
+                    f"Controller :: LiveViewController: Left click event occured at {self.roi_point_1}"
+                )
+                self.update_pixmap()
+                return True
+            if event.button() == Qt.RightButton:
+                x, y = event.position().toPoint().x(), event.position().toPoint().y()
+                self.roi_point_2 = (x, y)
+                log_debug(
+                    f"Controller :: LiveViewController: Left click event occured at {self.roi_point_2}"
+                )
+                self.update_pixmap()
                 return True
         return super().eventFilter(watched, event)
 
@@ -61,7 +72,7 @@ class LiveViewController(QObject):
         resized_image = cv2.resize(
             image, (new_width, new_height), interpolation=cv2.INTER_AREA
         )
-        live_view_image = np.zeros((live_height, live_width, 3), dtype=np.uint8)
+        live_view_image = 15 * np.ones((live_height, live_width, 3), dtype=np.uint8)
 
         x_offset = (live_width - new_width) // 2
         y_offset = (live_height - new_height) // 2
@@ -69,6 +80,10 @@ class LiveViewController(QObject):
         live_view_image[
             y_offset : y_offset + new_height, x_offset : x_offset + new_width
         ] = resized_image
+
+        live_view_image = self.add_markers(
+            live_view_image, marker1=self.roi_point_1, marker2=self.roi_point_2
+        )
 
         # Save last resize parameters to avoid recomputing for roi
         self.last_resize_params = {
@@ -81,6 +96,30 @@ class LiveViewController(QObject):
         }
 
         return live_view_image
+
+    def add_markers(
+        self,
+        image: np.ndarray,
+        marker1: Tuple[int, int],
+        marker2: Tuple[int, int],
+    ) -> np.ndarray:
+        cnt = 0
+        if marker1 is not None:
+            image = cv2.circle(
+                image, marker1, radius=3, color=(255, 0, 0), thickness=-1
+            )
+            cnt += 1
+        if marker2 is not None:
+            image = cv2.circle(
+                image, marker1, radius=3, color=(0, 255, 0), thickness=-1
+            )
+            cnt += 1
+        if cnt >= 2:
+            image = cv2.rectangle(
+                image, marker1, marker2, color=(0, 255, 0), thickness=1
+            )
+
+        return image
 
     def update_pixmap(self):
         if self.detection_current_image is not None:
@@ -99,3 +138,7 @@ class LiveViewController(QObject):
             image2pixmap(self.detection_current_image)
         )
         self.update_pixmap()
+
+    def reset_roi_points(self) -> None:
+        self.roi_point_1 = None
+        self.roi_point_2 = None

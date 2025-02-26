@@ -1,7 +1,11 @@
 from ..model import Model
 from ..view import View
 from .live_view_controller import LiveViewController
-from track_almost_anything._logging import TrackAlmostAnythingException, log_error
+from track_almost_anything._logging import (
+    TrackAlmostAnythingException,
+    log_error,
+    log_info,
+)
 
 from typing import Tuple
 
@@ -17,11 +21,30 @@ class RoiController:
         self.roi_x = None
         self.roi_y = None
 
+        self._bind()
+
     def _bind(self) -> None:
-        pass
+        self.view.ui.button_save_roi
 
     def get_roi(self) -> None:
-        pass
+        roi_live_view_1 = self.live_view_controller.roi_point_1
+        roi_live_view_2 = self.live_view_controller.roi_point_2
+        if roi_live_view_1 is None or roi_live_view_2 is None:
+            # TODO: add Qt error prompt
+            log_error(
+                "Controller :: RioController: ROI point(s) have not all been defined !"
+            )
+
+        self.roi_x, self.roi_y = self.process_roi(
+            point_1_live_view=roi_live_view_1, point_2_live_view=roi_live_view_2
+        )
+
+        current_image = self.live_view_controller.detection_current_image
+        if current_image is not None:
+            pass
+            # TODO: implement this: add region of interest highlight with alpha channel ideally
+
+        log_info(f"Controller :: RoiController: ROI was added")
 
     def process_roi(
         self, point_1_live_view: Tuple[int, int], point_2_live_view: Tuple[int, int]

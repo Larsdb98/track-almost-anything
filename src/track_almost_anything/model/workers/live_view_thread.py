@@ -47,4 +47,4 @@ class DetectionThread(QThread):
         self.quit()
         self.wait()
         self.capture.release()
-        log_info("Controller :: Workers :: DetectionThread: Detection terminated.")
+        log_info("Controller :: Workers :: DetectionThread: Killing detection worker.")

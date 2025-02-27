@@ -6,7 +6,7 @@ from PySide6.QtCore import QObject, QEvent, Qt
 from PySide6.QtGui import QPixmap
 import numpy as np
 import cv2
-from typing import Tuple
+from typing import Tuple, Dict
 
 # TODO: Implement logic for roi control
 
@@ -38,7 +38,9 @@ class LiveViewController(QObject):
         ):
             if event.button() == Qt.LeftButton:
                 x, y = event.position().toPoint().x(), event.position().toPoint().y()
-                self.roi_point_1 = (x, y)
+                self.roi_point_1 = self.clamp_marker_to_image_bounds(
+                    marker=(x, y), resize_params=self.last_resize_params
+                )
                 log_debug(
                     f"Controller :: LiveViewController: Left click event occured at {self.roi_point_1}"
                 )
@@ -46,12 +48,15 @@ class LiveViewController(QObject):
                 return True
             if event.button() == Qt.RightButton:
                 x, y = event.position().toPoint().x(), event.position().toPoint().y()
-                self.roi_point_2 = (x, y)
+                self.roi_point_2 = self.clamp_marker_to_image_bounds(
+                    marker=(x, y), resize_params=self.last_resize_params
+                )
                 log_debug(
                     f"Controller :: LiveViewController: Left click event occured at {self.roi_point_2}"
                 )
                 self.update_pixmap()
                 return True
+
         return super().eventFilter(watched, event)
 
     def resize_image_for_live_view(self, image: np.ndarray) -> np.ndarray:
@@ -72,6 +77,7 @@ class LiveViewController(QObject):
         resized_image = cv2.resize(
             image, (new_width, new_height), interpolation=cv2.INTER_AREA
         )
+        # Dark gray frame rgb(15, 15, 15) around live view image
         live_view_image = 15 * np.ones((live_height, live_width, 3), dtype=np.uint8)
 
         x_offset = (live_width - new_width) // 2
@@ -97,6 +103,27 @@ class LiveViewController(QObject):
 
         return live_view_image
 
+    def clamp_marker_to_image_bounds(
+        self,
+        marker: Tuple[int, int],
+        resize_params: Dict[str, int],
+    ) -> Tuple[int, int]:
+        if marker is None or self.detection_current_image is None:
+            return None
+        if resize_params is None:
+            return marker
+
+        x, y = marker
+        clamped_x = max(
+            resize_params["x_offset"],
+            min(x, resize_params["x_offset"] + resize_params["new_width"] - 1),
+        )
+        clamped_y = max(
+            resize_params["y_offset"],
+            min(y, resize_params["y_offset"] + resize_params["new_height"] - 1),
+        )
+        return (clamped_x, clamped_y)
+
     def add_markers(
         self,
         image: np.ndarray,
@@ -111,7 +138,7 @@ class LiveViewController(QObject):
             cnt += 1
         if marker2 is not None:
             image = cv2.circle(
-                image, marker1, radius=3, color=(0, 255, 0), thickness=-1
+                image, marker2, radius=3, color=(0, 255, 0), thickness=-1
             )
             cnt += 1
         if cnt >= 2:

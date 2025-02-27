@@ -5,6 +5,7 @@ from track_almost_anything._logging import (
     TrackAlmostAnythingException,
     log_error,
     log_info,
+    log_debug,
 )
 
 from typing import Tuple
@@ -23,8 +24,10 @@ class RoiController:
 
         self._bind()
 
+        log_debug("Controller :: Roi Controller initialized successfully.")
+
     def _bind(self) -> None:
-        self.view.ui.button_save_roi
+        self.view.ui.button_save_roi.clicked.connect(self.get_roi)
 
     def get_roi(self) -> None:
         roi_live_view_1 = self.live_view_controller.roi_point_1
@@ -33,6 +36,10 @@ class RoiController:
             # TODO: add Qt error prompt
             log_error(
                 "Controller :: RioController: ROI point(s) have not all been defined !"
+            )
+            self.view.message_boxes.warning_ok(
+                title="Warning",
+                message="ROI points have not all been set! Set them first by left and right clicking on the live view then try again.",
             )
 
         self.roi_x, self.roi_y = self.process_roi(

@@ -16,7 +16,7 @@ class DetectionThread(QThread):
         self.capture = None
 
     def run(self):
-        log_info("Controller :: Workers :: DetectionThread: Detection started...")
+        log_info("Model :: Workers :: DetectionThread: Detection started...")
         img_width = 1280
         img_height = 720
         self.capture = cv2.VideoCapture(0)
@@ -24,7 +24,7 @@ class DetectionThread(QThread):
         self.capture.set(4, img_height)
 
         detector = MPHandsDetection()
-        log_info("Controller :: Workers :: DetectionThread: Starting loop...")
+        log_info("Model :: Workers :: DetectionThread: Starting loop...")
         while self.running:
             # TODO: Replace with actual detection logic
             success, image = self.capture.read()
@@ -39,7 +39,7 @@ class DetectionThread(QThread):
             detection_result = {"debug_image": debug_image}
 
             self.detection_result.emit(detection_result)
-            log_debug("Controller :: Workers :: DetectionThread: Emitted signal.")
+            log_debug("Model :: Workers :: DetectionThread: Emitted signal.")
             time.sleep(0.05)  # Prevents excessive CPU usage
 
     def stop(self):
@@ -47,4 +47,4 @@ class DetectionThread(QThread):
         self.quit()
         self.wait()
         self.capture.release()
-        log_info("Controller :: Workers :: DetectionThread: Killing detection worker.")
+        log_info("Model :: Workers :: DetectionThread: Killing detection worker.")

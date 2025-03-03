@@ -20,12 +20,18 @@ class AbstractDetectionThread(QThread):
             while self.paused:
                 time.sleep(0.1)
 
-    def pause(self):
+    def toggle_pause(self):
         self.paused ^= True
         if self.paused:
             log_info("Model :: DetectionModel :: Worker: Image stream has been paused.")
         else:
             log_info("Model :: DetectionModel :: Worker: Image stream has resumed.")
+
+    def get_pause_status(self) -> bool:
+        return self.paused
+
+    def set_pause_status(self, paused: bool) -> None:
+        self.paused = paused
 
     def stop(self):
         self.running = False

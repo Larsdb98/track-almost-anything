@@ -11,7 +11,7 @@ class Controller:
         self.model = model
         self.view = view
 
-        self.live_view_controller = LiveViewController(view=view)
+        self.live_view_controller = LiveViewController(view=self.view)
 
         self.roi_controller = RoiController(
             live_view_controller=self.live_view_controller,
@@ -21,8 +21,8 @@ class Controller:
 
         self.detection_controller = DetectionController(
             live_view_controller=self.live_view_controller,
-            detection_model=model.detection_model,
-            view=view,
+            model=self.model,
+            view=self.view,
         )
 
         log_debug("Controller initialized successfully.")

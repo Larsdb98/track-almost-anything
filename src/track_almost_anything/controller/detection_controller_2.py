@@ -1,22 +1,27 @@
-from ..model import Model
+from ..model import DetectionModel, Model
 from ..view import View
 from .table_view_controller import TableViewController
 from .live_view_controller import LiveViewController
 
 from ..api.processing.detection import DETECTION_FAMILIES, YOLO_CLASS_LABEL_DICT
+from ..api.processing.detection import MPHandsDetection
+from ..model.workers.live_view_thread import DetectionThread
 from track_almost_anything._logging import log_info, log_debug, log_error
 
 import queue
-from PySide6.QtCore import QObject
+from PySide6.QtCore import QObject, Signal, QThread
 
 from PySide6 import QtWidgets
+import numpy as np
+import cv2
+import time
 
 
 # For now I'm just using the basic built-in camera of my machine.
 # TODO: change that and move most processing code and image handling to Model
 
 
-class DetectionController(QObject):
+class DetectionController_2(QObject):
     def __init__(
         self,
         live_view_controller: LiveViewController,
@@ -99,16 +104,9 @@ class DetectionController(QObject):
         self.model.detection_model.detection_thread.detection_result.connect(
             self.handle_detection_result
         )
-        self.view.ui.button_pause.clicked.connect(
-            self.model.detection_model.detection_thread.toggle_pause
-        )
         self.model.detection_model.start_detection_process()
 
     def stop_detection_process(self):
-        # Unpause before stopping detection thread
-        if self.model.detection_model.detection_thread.get_pause_status():
-            self.model.detection_model.detection_thread.set_pause_status(paused=False)
-
         success = self.model.detection_model.stop_detection_process()
         if success:
             self.view.ui.button_start.setEnabled(True)
@@ -118,12 +116,11 @@ class DetectionController(QObject):
                 "Controller :: DetectionController: Unable to stop current detection process."
             )
 
-    # def send_image(self, image: np.ndarray) -> None:
-    #     self.image_queue.put(image)
+    def send_image(self, image: np.ndarray) -> None:
+        self.image_queue.put(image)
 
-    # TODO: needs to be modified once detection outputs have been "uniformized"
     def handle_detection_result(self, result) -> None:
-        # log_debug("Controller :: DetectionController :: Received detection result.")
+        log_debug("Controller :: DetectionController :: Received detection result.")
         debug_image = result["debug_image"]
         self.live_view_controller.load_image(image=debug_image)
 

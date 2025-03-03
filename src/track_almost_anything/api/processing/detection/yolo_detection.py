@@ -1,8 +1,7 @@
 from track_almost_anything import PATH_TO_DETECTION_MODELS
 from track_almost_anything.api.processing.utils import (
     TorchBackend,
-    YOLO_DETECTION_MODELS_CHECKPOINTS,
-    DETECTION_FAMILIES,
+    YOLO_DETECTION_MODELS_DICT,
 )
 from track_almost_anything._logging import log_info, log_debug
 
@@ -36,40 +35,38 @@ class ObjectDetectionConfig(BaseModel):
 
 
 class YoloObjectDetection:
-    def __init__(
-        self, detection_family: str = "yolov8", model_size: str = "n", device=None
-    ):
-        self._detection_family = detection_family
+    def __init__(self, model_type: str = "yolov5n", device=None, yolo_verbose=False):
+        self.model_type = model_type
+        self.yolo_verbose = yolo_verbose
         if device is None:
+            log_debug(
+                f"API :: YOLO Detection: No device was given. Detecting devices..."
+            )
             backend = TorchBackend()
             self.device = backend.get()
         else:
             self.device = device
-        log_debug(f"Detection :: YOLO :: init - Using detection backend: {self.device}")
+        log_debug(f"API :: YOLO Detection: Using detection backend: {self.device}")
 
-        detection_model = detection_family + model_size
-        if detection_model in DETECTION_FAMILIES["yolo"]:
-            self.detector = self.set_yolo_detector(
-                detection_family=detection_family, model_size=model_size
-            )
+        self.detector = None
 
-    def set_yolo_detector(self, detection_family: str, model_size: str):
-        detection_model = YOLO_DETECTION_MODELS_CHECKPOINTS[detection_family][
-            model_size
-        ]
+    def set_model_type(self, model_type: str) -> None:
+        self.model_type = model_type
+
+    def setup_yolo_detector(self) -> None:
+        detection_model = YOLO_DETECTION_MODELS_DICT[self.model_type]
         detection_model_path = PATH_TO_DETECTION_MODELS / detection_model
 
-        detector = YOLO(detection_model_path)
-        detector.model.to(self.device)
-        log_info(f"Detection Model from YOLO: {detection_model}")
-        return detector
+        self.detector = YOLO(detection_model_path)
+        self.detector.model.to(self.device)
+        log_info(f"API :: YOLO: Using detection model {detection_model}")
 
     def predict(
         self,
         image_rgb: np.ndarray,
         inference_config: ObjectDetectionInferenceConfig = None,
     ):
-        results = self.detector(image_rgb)
+        results = self.detector(image_rgb, verbose=self.yolo_verbose)
         return results
 
     def unpack_yolo_results(self, results):

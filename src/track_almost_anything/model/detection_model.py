@@ -11,6 +11,7 @@ from ..api.processing.detection import DETECTION_FAMILIES, YOLO_CLASS_LABEL_DICT
 from track_almost_anything._logging import log_info, log_debug, log_error
 
 import numpy as np
+import queue
 
 
 class DetectionModel:
@@ -23,6 +24,9 @@ class DetectionModel:
 
         self.items_to_detect = YOLO_CLASS_LABEL_DICT.keys()
         self.active_items = []
+
+        self.detection_thread = None
+        self.image_queue = queue.Queue()
 
         self._detector = None
         self._detection_backend = TorchBackend()

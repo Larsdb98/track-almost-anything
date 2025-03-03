@@ -1,19 +1,18 @@
-from track_almost_anything.api.processing.detection import MPHandsDetection
+from track_almost_anything.api.processing.detection import (
+    MPHandsDetection,
+    MPPoseDetection,
+)
 from track_almost_anything._logging import log_info, log_debug
+from .abstract_detection_thread import AbstractDetectionThread
 
 from PySide6.QtCore import Signal, QThread
 import cv2
 import time
 
 
-class DetectionThread(QThread):
-    detection_result = Signal(dict)
-
-    def __init__(self):
+class MediaPipeDetectionThread(AbstractDetectionThread):
+    def __init__(self, image_queue):
         super().__init__()
-        # self.image_queue = image_queue
-        self.running = True
-        self.capture = None
 
     def run(self):
         log_info("Model :: Workers :: DetectionThread: Detection started...")

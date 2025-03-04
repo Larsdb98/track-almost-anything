@@ -13,6 +13,9 @@ class RoiModel(QObject):
 
         self.roi_image_preview = None
 
+    def get_roi(self) -> Tuple[Tuple[int, int], Tuple[int, int]]:
+        return self.roi_x, self.roi_y
+
     def create_roi_preview(
         self,
         roi_x: Tuple[int, int],
@@ -64,3 +67,8 @@ class RoiModel(QObject):
         ] = new_image
 
         return roi_view_image
+
+    def clear_roi(self) -> None:
+        self.roi_x = None
+        self.roi_y = None
+        self.roi_image_preview = None

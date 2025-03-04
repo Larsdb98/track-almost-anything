@@ -168,5 +168,6 @@ cython_debug/
 prompts.txt
 # Custom directories
 
+logs/
 resources/detection_models/
 tests_and_extras_taa/

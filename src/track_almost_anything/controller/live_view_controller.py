@@ -1,5 +1,10 @@
 from ..view import View
-from track_almost_anything._logging import log_info, log_debug, log_error
+from track_almost_anything._logging import (
+    log_info,
+    log_debug,
+    log_error,
+    TrackAlmostAnythingException,
+)
 from .utils import image2pixmap
 
 from PySide6.QtCore import QObject, QEvent, Qt
@@ -27,9 +32,11 @@ class LiveViewController(QObject):
         self.roi_point_1 = None  # TODO: By default make ROI the same size as image
         self.roi_point_2 = None
 
+        self.roi_point_1_image_frame = None
+        self.roi_point_2_image_frame = None
+
     def eventFilter(self, watched, event):
         if watched == self.view and event.type() == QEvent.Resize:
-            # log_debug("Controller :: Detection Controller :: Resize event received.")
             self.update_pixmap()
 
         if (
@@ -41,18 +48,29 @@ class LiveViewController(QObject):
                 self.roi_point_1 = self.clamp_marker_to_image_bounds(
                     marker=(x, y), resize_params=self.last_resize_params
                 )
+                self.roi_point_1_image_frame = self.live_view_to_image_transform(
+                    self.roi_point_1
+                )
                 log_debug(
                     f"Controller :: LiveViewController: Left click event occured at {self.roi_point_1}"
                 )
                 self.update_pixmap()
                 return True
-            if event.button() == Qt.RightButton:
+
+        if (
+            watched == self.view.ui.label_video_feed
+            and event.type() == QEvent.MouseButtonRelease
+        ):
+            if event.button() == Qt.LeftButton:
                 x, y = event.position().toPoint().x(), event.position().toPoint().y()
                 self.roi_point_2 = self.clamp_marker_to_image_bounds(
                     marker=(x, y), resize_params=self.last_resize_params
                 )
+                self.roi_point_2_image_frame = self.live_view_to_image_transform(
+                    self.roi_point_2
+                )
                 log_debug(
-                    f"Controller :: LiveViewController: Left click event occured at {self.roi_point_2}"
+                    f"Controller :: LiveViewController: Left click release event occured at {self.roi_point_1}"
                 )
                 self.update_pixmap()
                 return True
@@ -91,7 +109,7 @@ class LiveViewController(QObject):
             live_view_image, marker1=self.roi_point_1, marker2=self.roi_point_2
         )
 
-        # Save last resize parameters to avoid recomputing for roi
+        # Save last resize parameters to avoid recomputing for roi coordinates
         self.last_resize_params = {
             "new_width": new_width,
             "new_height": new_height,
@@ -133,25 +151,23 @@ class LiveViewController(QObject):
         cnt = 0
         if marker1 is not None:
             image = cv2.circle(
-                image, marker1, radius=3, color=(255, 0, 0), thickness=-1
+                image, marker1, radius=3, color=(43, 156, 255), thickness=-1
             )
             cnt += 1
         if marker2 is not None:
             image = cv2.circle(
-                image, marker2, radius=3, color=(0, 255, 0), thickness=-1
+                image, marker2, radius=3, color=(43, 156, 255), thickness=-1
             )
             cnt += 1
         if cnt >= 2:
             image = cv2.rectangle(
-                image, marker1, marker2, color=(0, 255, 0), thickness=1
+                image, marker1, marker2, color=(43, 156, 255), thickness=1
             )
 
         return image
 
     def update_pixmap(self):
         if self.detection_current_image is not None:
-            label_size = self.view.ui.label_video_feed.size()
-
             image_for_live_view = self.resize_image_for_live_view(
                 image=self.detection_current_image
             )
@@ -166,6 +182,42 @@ class LiveViewController(QObject):
         )
         self.update_pixmap()
 
+    def get_current_image(self) -> np.ndarray:
+        return self.detection_current_image
+
     def reset_roi_points(self) -> None:
         self.roi_point_1 = None
         self.roi_point_2 = None
+
+    # Refactor this method as it's used in multiple controllers
+    def live_view_to_image_transform(
+        self, pixel_coords_in_live_view: Tuple[int, int]
+    ) -> Tuple[int, int]:
+        if self.last_resize_params is None:
+            log_error(
+                "Controller :: RoiController: Last resizing parameters are not available !"
+            )
+            raise TrackAlmostAnythingException(
+                "Last resizing parameters are not available !"
+            )
+        x_live, y_live = pixel_coords_in_live_view
+        new_width = self.last_resize_params["new_width"]
+        new_height = self.last_resize_params["new_height"]
+        x_offset = self.last_resize_params["x_offset"]
+        y_offset = self.last_resize_params["y_offset"]
+        orig_width = self.last_resize_params["orig_width"]
+        orig_height = self.last_resize_params["orig_height"]
+
+        if not (
+            x_offset <= x_live < x_offset + new_width
+            and y_offset <= y_live < y_offset + new_height
+        ):
+            log_error(
+                "Controller :: RoiController: Invalid X or Y offsets on live view widget!"
+            )
+            return None
+        x_img = (x_live - x_offset) * (orig_width / new_width)
+        y_img = (y_live - y_offset) * (orig_height / new_height)
+        return int(round(x_img)), int(round(y_img))
+
+    # TODO: create a method to perform the opposite mapping from image frame to live view frame for roi points

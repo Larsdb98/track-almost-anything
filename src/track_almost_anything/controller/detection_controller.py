@@ -129,7 +129,6 @@ class DetectionController(QObject):
 
     def update_selected_detectable_items(self):
         selected_detectable_items = self.all_items_table_view_controller.get_selection()
-        # self.active_items_table_view_controller.remove_selected_items()
         all_active_detectable_items = (
             self.active_items_table_view_controller.get_all_items()
         )

@@ -100,7 +100,7 @@ class YoloObjectDetection:
 
             color = (0, 255, 0)
 
-            cv2.rectangle(image_rgb, (x1, y1), (x2, y2), color, 2)
+            cv2.rectangle(image_rgb, (x1, y1), (x2, y2), color, 1)
 
             label = f"{class_name}"
 

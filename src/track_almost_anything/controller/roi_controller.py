@@ -1,6 +1,7 @@
 from ..model import Model
 from ..view import View
 from .live_view_controller import LiveViewController
+from .utils import image2pixmap
 from track_almost_anything._logging import (
     TrackAlmostAnythingException,
     log_error,
@@ -8,7 +9,11 @@ from track_almost_anything._logging import (
     log_debug,
 )
 
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QPixmap
 from typing import Tuple
+import numpy as np
+import cv2
 
 
 class RoiController:
@@ -48,8 +53,7 @@ class RoiController:
 
         current_image = self.live_view_controller.detection_current_image
         if current_image is not None:
-            pass
-            # TODO: implement this: add region of interest highlight with alpha channel ideally
+            self.create_and_set_roi_preview()
 
         log_info(f"Controller :: RoiController: ROI was added")
 
@@ -105,3 +109,16 @@ class RoiController:
         x_img = (x_live - x_offset) * (orig_width / new_width)
         y_img = (y_live - y_offset) * (orig_height / new_height)
         return int(round(x_img)), int(round(y_img))
+
+    def create_and_set_roi_preview(self) -> None:
+        roi_preview_image = self.model.roi_model.create_roi_preview(
+            roi_x=self.roi_x,
+            roi_y=self.roi_y,
+            roi_preview_width=self.view.ui.label_roi_preview.size().width(),
+            roi_preview_height=self.view.ui.label_roi_preview.size().height(),
+            image=self.live_view_controller.get_current_image(),
+        )
+
+        roi_preview_pixmap = QPixmap.fromImage(image2pixmap(image=roi_preview_image))
+        self.view.ui.label_roi_preview.setPixmap(roi_preview_pixmap)
+        self.view.ui.label_roi_preview.setAlignment(Qt.AlignCenter)

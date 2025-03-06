@@ -2,6 +2,7 @@ from track_almost_anything.api.processing.detection import ObjectDetectionConfig
 from ..api.processing.utils import TorchBackend
 from ..api.processing.detection import YOLO_CLASS_LABEL_DICT
 from .workers import MediaPipeHandsThread, MediaPipePoseThread, YoloThread
+from .source_model import SourceModel
 
 from track_almost_anything._logging import log_info, log_debug, log_error
 
@@ -10,7 +11,9 @@ import queue
 
 
 class DetectionModel(QObject):
-    def __init__(self):
+    def __init__(self, source_model: SourceModel):
+        self.source_model = source_model
+
         self.detection_model = ""
         self.model_type = ""
 

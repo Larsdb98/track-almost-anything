@@ -11,9 +11,7 @@ from PySide6.QtCore import QObject
 
 from PySide6 import QtWidgets
 
-
 # For now I'm just using the basic built-in camera of my machine.
-# TODO: change that and move most processing code and image handling to Model
 
 
 class DetectionController(QObject):

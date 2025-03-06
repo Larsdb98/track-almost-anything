@@ -1,5 +1,10 @@
 from track_almost_anything.cli import app_parser
-from track_almost_anything._logging import configure_logger, log_info, log_error
+from track_almost_anything._logging import (
+    configure_logger,
+    log_info,
+    log_error,
+    log_warm,
+)
 from track_almost_anything.model import Model
 from track_almost_anything.view import View
 from track_almost_anything.controller import Controller

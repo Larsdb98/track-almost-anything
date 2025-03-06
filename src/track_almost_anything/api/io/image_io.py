@@ -41,13 +41,21 @@ def load_image_rgb(image_path: Path | str) -> np.ndarray:
     """Load an image using OpenCV and converting color space from BGR to RGB"""
     image = cv2.imread(image_path)
     if image is None:
-        raise FileNotFoundError(f"Image not found at {image_path}")
+        raise TrackerFileNotFoundError(f"Image not found at {image_path}")
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     return image
 
 
+def load_image_bgr(image_path: Path | str) -> np.ndarray:
+    """Load an image using OpenCV and converting color space from BGR to RGB"""
+    image = cv2.imread(image_path)
+    if image is None:
+        raise TrackerFileNotFoundError(f"Image not found at {image_path}")
+    return image
+
+
 def get_image_sequence_config_from_dir(
-    img_dir_path: Path, accepted_formats: List[str] = [".png", ".jpg"]
+    img_dir_path: Path, accepted_formats: List[str] = [".png", ".jpg", "jpeg"]
 ) -> ImageSequenceConfig:
     img_dir_path = Path(img_dir_path)
 

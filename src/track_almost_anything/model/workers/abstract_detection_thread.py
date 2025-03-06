@@ -2,6 +2,7 @@ from track_almost_anything._logging import log_info, log_debug, log_error
 
 from PySide6.QtCore import Signal, QThread
 import time
+import queue
 
 
 class AbstractDetectionThread(QThread):
@@ -32,6 +33,28 @@ class AbstractDetectionThread(QThread):
 
     def set_pause_status(self, paused: bool) -> None:
         self.paused = paused
+
+    def stop(self):
+        self.running = False
+        self.quit()
+        self.wait()
+
+
+class AbstractImprovedDetectionThread(QThread):
+    detection_result = Signal(dict)
+    request_new_image = Signal()
+
+    def __init__(self, image_queue: queue.Queue):
+        super().__init__()
+        self.image_queue = image_queue
+        self.running = True
+        self.paused = False
+
+    def toggle_pause(self):
+        self.paused ^= True
+        log_info(
+            "Detection thread paused." if self.paused else "Detection thread resumed."
+        )
 
     def stop(self):
         self.running = False

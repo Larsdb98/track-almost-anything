@@ -49,6 +49,10 @@ def configure_logger(log_level, log_dir: str = ""):
     _logger.addHandler(handler_console_out)
 
 
+def log_warm(log: str):
+    _logger.warning(log)
+
+
 def log_debug(log: str):
     _logger.debug(log)
 

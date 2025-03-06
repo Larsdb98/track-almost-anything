@@ -1,6 +1,8 @@
 from track_almost_anything._logging import (
     log_info,
     log_error,
+    log_debug,
+    log_warm,
     TrackerFileNotFoundError,
     TrackAlmostAnythingException,
 )

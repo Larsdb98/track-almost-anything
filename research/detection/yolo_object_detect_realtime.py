@@ -16,9 +16,8 @@ def main():
     sequence_config = get_image_sequence_config_from_dir(img_dir_path=sequence_dir)
 
     t_backend = TorchBackend()
-    detector = YoloObjectDetection(
-        detection_family="yolov8", model_size="n", device=t_backend.get()
-    )
+    detector = YoloObjectDetection(model_type="yolov5n", device=t_backend.get())
+    detector.setup_yolo_detector()
 
     for i, img_path in enumerate(sequence_config.img_paths):
         img = load_image_rgb(img_path)

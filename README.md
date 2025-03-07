@@ -2,7 +2,9 @@
 
 This Python-based software allows users to track various items or objects via a camera. This software will have various object detection algorithms (from Ultralysics' YOLO, Google's mediapipe, etc.) alongside tracking algorithms.
 
-WARNING: Not functional yet.
+**PROGRESS STATUS**: Source control & detections are mostly functional. Although there are still some minor features to implement. Tracking and analytics functionalities still need to be implemented. 
+
+This software runs on MacOS (both with x86 and ARM processors). It still has not been tested on Linux or Windows. 
 
 ![](resources/extras/tracker_screenshot.png)
 

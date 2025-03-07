@@ -1,29 +1,36 @@
-# from typing import TYPE_CHECKING
-# if TYPE_CHECKING:
-from ..model import DetectionModel
+from ..model import Model
 from ..view import View
 from .table_view_controller import TableViewController
+from .live_view_controller import LiveViewController
+from .source_controller import SourceController
 
 from ..api.processing.detection import DETECTION_FAMILIES, YOLO_CLASS_LABEL_DICT
-from track_almost_anything._logging import log_info, log_debug, log_error
+from track_almost_anything._logging import log_info, log_debug, log_error, log_warm
 
-import multiprocessing
-from PySide6.QtCore import QTimer, QObject, Signal, Qt, QEvent
-from PySide6.QtGui import QPixmap
+import queue
+from PySide6.QtCore import QObject
+
 from PySide6 import QtWidgets
-import numpy as np
-import cv2
+
+# For now I'm just using the basic built-in camera of my machine.
 
 
 class DetectionController(QObject):
-    def __init__(self, detection_model: DetectionModel, view: View):
+    def __init__(
+        self,
+        live_view_controller: LiveViewController,
+        source_controller: SourceController,
+        model: Model,
+        view: View,
+    ):
         super().__init__()
-        self.detection_model = detection_model
+        self.live_view_controller = live_view_controller
+        self.source_controller = source_controller
+        self.model = model
         self.view = view
 
-        self.detection_current_pixmap = None
-        self.detection_current_image = None
-        self.live_view_size = None
+        self.detection_thread = None
+        self.image_queue = queue.Queue()
 
         # All items table view
         self.all_items_table_view_controller = TableViewController(
@@ -38,16 +45,13 @@ class DetectionController(QObject):
             table_view=self.view.ui.table_view_active_detections
         )
 
-        self.view.ui.label_video_feed.setSizePolicy(
-            QtWidgets.QSizePolicy.Ignored,  # Width can shrink/grow
-            QtWidgets.QSizePolicy.Ignored,  # Height can shrink/grow
+        self.view.ui.label_video_feed.setSizePolicy(  # Enable shrink/grow
+            QtWidgets.QSizePolicy.Ignored,
+            QtWidgets.QSizePolicy.Ignored,
         )
         self.view.ui.label_video_feed.setScaledContents(True)
 
         self._bind()
-        self.view.installEventFilter(self)
-
-        # TODO: Set up detection loop in separate Qt Process to run in parallel from main UI thread
 
         log_debug("Controller :: Detection Controller initialized successfully.")
 
@@ -76,70 +80,77 @@ class DetectionController(QObject):
             self.active_items_table_view_controller.remove_selected_items
         )
 
-        # Test
-        self.view.ui.button_save_roi.clicked.connect(self.test_load_image_to_cam_view)
+        # Detection loop
+        self.view.ui.button_start.clicked.connect(self.start_detection_process)
+        self.view.ui.button_stop.setEnabled(False)  # TODO: refactor this in UI file
+        self.view.ui.button_stop.clicked.connect(self.stop_detection_process)
 
-    def eventFilter(self, watched, event):
-        if watched == self.view and event.type() == QEvent.Resize:
-            log_debug("Controller :: Detection Controller :: Resize event received.")
-            self.update_pixmap()
-        return super().eventFilter(watched, event)
-
-    def update_live_view_pixmap(self, image: np.ndarray) -> None:
-        if self.detection_current_image:
-            live_view_image = self.image_to_live_view_pixmap(
-                image=self.detection_current_image
-            )
-
-    def image_to_live_view_pixmap(self, image: np.ndarray) -> np.ndarray:
-        live_width = self.view.ui.label_video_feed.size().width()
-        live_height = self.view.ui.label_video_feed.size().height()
-
-        img_height, img_width = image.shape[:2]
-
-        live_aspect = live_width / live_height
-        img_aspect = img_width / img_height
-
-        if img_aspect > live_aspect:
-            # Fit to width
-            new_width = live_width
-            new_height = int(live_width / img_aspect)
-        else:
-            # Fit to height
-            new_height = live_height
-            new_width = int(live_height * img_aspect)
-
-        resized_image = cv2.resize(
-            image, (new_width, new_height), interpolation=cv2.INTER_AREA
+    def set_detection_model(self) -> None:
+        detection_model = self.view.ui.combo_detection_algo.currentText()
+        model_type = self.view.ui.combo_model_type.currentText()
+        self.model.detection_model.set_detection_model(
+            detection_model=detection_model, model_type=model_type
         )
-        live_view_image = np.zeros((live_height, live_width, 3), dtype=np.uint8)
-        x_offset = (live_width - new_width) // 2
-        y_offset = (live_height - new_height) // 2
 
-        live_view_image[
-            y_offset : y_offset + new_height, x_offset : x_offset + new_width
-        ] = resized_image
-        return live_view_image
+    def start_detection_process(self):
+        self.view.ui.button_start.setEnabled(False)
+        self.view.ui.button_stop.setEnabled(True)
+        self.set_detection_model()
+        self.model.detection_model.setup_detection_process()
+        self.model.detection_model.detection_thread.detection_result.connect(
+            self.handle_detection_result
+        )
+        # Connect source to detection pipeline
+        source = self.view.ui.comboBox_image_source.currentText()
+        if source == "From File...":
+            if self.model.source_model.is_image_sequence_set():
+                log_info("Controller :: DetectionController: Image sequence is ready.")
+            elif self.model.source_model.is_video_config_set():
+                log_info("Controller :: DetectionController: Video file is ready.")
 
-    def update_pixmap(self):
-        # Update video feed QLabel weith a resized pixmap
-        if self.detection_current_pixmap:
-            label_size = self.view.ui.label_video_feed.size()
-            log_debug(
-                f"Controller :: Detection Controller :: Live view size: {label_size.height()} & {label_size.width()}"
+            else:
+                log_warm("No image sequence or video has been selected yet")
+                self.source_controller.load_from_file_or_dir()
+        else:
+            available_cameras = self.source_controller.get_available_cameras_opencv()
+
+            # TODO: We should be able to choose the resolution.
+            self.model.source_model.setup_opencv_camera(
+                source=available_cameras[source], img_width=1280, img_height=720
             )
-            scaled_pixmap = self.detection_current_pixmap.scaled(
-                label_size,
-                Qt.KeepAspectRatio,
-                Qt.SmoothTransformation,
+            log_info(f"Controller :: DetectionController: Using {source}.")
+
+        self.model.detection_model.detection_thread.request_new_image.connect(
+            self.model.source_model.request_new_image
+        )
+        self.view.ui.button_pause.clicked.connect(
+            self.model.detection_model.detection_thread.toggle_pause
+        )
+        self.model.detection_model.start_detection_process()
+
+    def stop_detection_process(self):
+        # Unpause before stopping detection thread
+        if self.model.detection_model.detection_thread.get_pause_status():
+            self.model.detection_model.detection_thread.set_pause_status(paused=False)
+
+        success = self.model.detection_model.stop_detection_process()
+        self.model.source_model.release_source()
+        if success:
+            self.view.ui.button_start.setEnabled(True)
+            self.view.ui.button_stop.setEnabled(False)
+        else:
+            log_error(
+                "Controller :: DetectionController: Unable to stop current detection process."
             )
 
-            self.view.ui.label_video_feed.setPixmap(scaled_pixmap)
-            self.view.ui.label_video_feed.setAlignment(Qt.AlignCenter)
+    # TODO: needs to be modified once detection outputs have been "uniformized"
+    def handle_detection_result(self, result) -> None:
+        # log_debug("Controller :: DetectionController :: Received detection result.")
+        debug_image = result["debug_image"]
+        self.live_view_controller.load_image(image=debug_image)
 
     def update_selected_detectable_items(self):
         selected_detectable_items = self.all_items_table_view_controller.get_selection()
-        # self.active_items_table_view_controller.remove_selected_items()
         all_active_detectable_items = (
             self.active_items_table_view_controller.get_all_items()
         )
@@ -153,7 +164,7 @@ class DetectionController(QObject):
         self.active_items_table_view_controller.populate_table(
             items=new_active_detectable_items
         )
-        self.detection_model.active_items = new_active_detectable_items
+        self.model.detection_model.active_items = new_active_detectable_items
 
     def update_detection_model_type(self):
         self.view.ui.combo_model_type.clear()
@@ -175,15 +186,3 @@ class DetectionController(QObject):
         elif detection_algorithm == "mediapipe":
             self.all_items_table_view_controller.clear_table()
             self.active_items_table_view_controller.clear_table()
-
-    def test_load_image_to_cam_view(self):
-        image_loc = r"/Users/larsdelbubba/Desktop/Coding Projects/track-almost-anything/tests_and_extras_taa/taa_ai_gui_1.png"
-        self.detection_current_pixmap = QPixmap(image_loc)
-        self.view.ui.label_video_feed.setPixmap(
-            self.detection_current_pixmap.scaled(
-                self.view.ui.label_video_feed.size(),
-                Qt.KeepAspectRatio,
-                Qt.SmoothTransformation,
-            )
-        )
-        self.update_pixmap()

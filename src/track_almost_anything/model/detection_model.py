@@ -1,13 +1,16 @@
 from track_almost_anything.api.processing.detection import ObjectDetectionConfig
 from ..api.processing.utils import TorchBackend
 from ..api.processing.detection import YOLO_CLASS_LABEL_DICT
-from .workers import MediaPipeHandsThread, MediaPipePoseThread, YoloThread
+from .workers import (
+    MediaPipeHandsThread,
+    MediaPipePoseThread,
+    YoloThread,
+)
 from .source_model import SourceModel
 
 from track_almost_anything._logging import log_info, log_debug, log_error
 
 from PySide6.QtCore import QObject
-import queue
 
 
 class DetectionModel(QObject):
@@ -23,7 +26,7 @@ class DetectionModel(QObject):
         self.active_items = []
 
         self.detection_thread = None
-        self.image_queue = queue.Queue()
+        # self.image_queue = queue.Queue()
 
         # self._detector = None
         self._detection_backend = TorchBackend()
@@ -43,11 +46,11 @@ class DetectionModel(QObject):
             match self.model_type:
                 case "hands":
                     self.detection_thread = MediaPipeHandsThread(
-                        image_queue=self.image_queue
+                        image_queue=self.source_model.image_queue
                     )
                 case "pose":
                     self.detection_thread = MediaPipePoseThread(
-                        image_queue=self.image_queue
+                        image_queue=self.source_model.image_queue
                     )
                 # Default
                 case _:
@@ -56,7 +59,7 @@ class DetectionModel(QObject):
                     )
         elif self.detection_model == "yolo":
             self.detection_thread = YoloThread(
-                image_queue=self.image_queue, model_type=self.model_type
+                image_queue=self.source_model.image_queue, model_type=self.model_type
             )
         else:
             log_error(

@@ -4,55 +4,14 @@ from track_almost_anything.api.processing.detection import (
 from track_almost_anything._logging import log_info, log_debug
 from .abstract_detection_thread import (
     AbstractDetectionThread,
-    AbstractImprovedDetectionThread,
 )
 
-from PySide6.QtCore import Signal, QThread
 import cv2
 import time
 import queue
 
 
 class MediaPipeHandsThread(AbstractDetectionThread):
-    def __init__(self, image_queue):
-        super().__init__(image_queue=image_queue)
-
-    def run(self):
-        log_info("Model :: Workers :: MediaPipeHandsThread: Detection started...")
-        img_width = 1280
-        img_height = 720
-        self.capture = cv2.VideoCapture(0)
-        self.capture.set(3, img_width)
-        self.capture.set(4, img_height)
-
-        detector = MPHandsDetection()
-        log_info("Model :: Workers :: MediaPipeHandsThread: Starting loop...")
-        while self.running:
-            # TODO: Replace with actual detection logic
-            success, image = self.capture.read()
-            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-            results = detector.predict(image_rgb=image)
-
-            debug_image = detector.debug_draw_hands(
-                image_rgb=image, mp_detection_results_raw=results
-            )
-            debug_image = cv2.cvtColor(debug_image, cv2.COLOR_RGB2BGR)
-            detection_result = {"debug_image": debug_image}
-
-            self.detection_result.emit(detection_result)
-
-            while self.paused:
-                time.sleep(0.1)
-
-    def stop(self):
-        self.running = False
-        self.quit()
-        self.wait()
-        self.capture.release()
-        log_info("Model :: Workers :: MediaPipeHandsThread: Killing detection worker.")
-
-
-class MediaPipeHandsImprovedThread(AbstractImprovedDetectionThread):
     def __init__(self, image_queue: queue.Queue):
         super().__init__(image_queue=image_queue)
 
@@ -65,8 +24,15 @@ class MediaPipeHandsImprovedThread(AbstractImprovedDetectionThread):
 
         while self.running:
             try:
-                image = self.image_queue.get(timeout=1)
+                image = self.image_queue.get(timeout=1)  # timeout=1
             except queue.Empty:
+                continue
+
+            if image is None:
+                log_info(
+                    "Model :: Workers :: MediaPipeHandsThread: Sequence Finished Pausing detections..."
+                )
+                self.paused = True
                 continue
 
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
@@ -81,6 +47,7 @@ class MediaPipeHandsImprovedThread(AbstractImprovedDetectionThread):
             detection_result = {"debug_image": debug_image}
 
             self.detection_result.emit(detection_result)
+            self.emit_new_image_request()
 
             while self.paused:
                 time.sleep(0.1)
@@ -89,5 +56,4 @@ class MediaPipeHandsImprovedThread(AbstractImprovedDetectionThread):
         self.running = False
         self.quit()
         self.wait()
-        self.capture.release()
         log_info("Model :: Workers :: MediaPipeHandsThread: Killing detection worker.")

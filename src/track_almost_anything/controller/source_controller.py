@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QFileDialog
 from PySide6.QtCore import QObject, Qt
 
 from pathlib import Path
+from typing import Dict
 
 
 class SourceController(QObject):
@@ -25,14 +26,17 @@ class SourceController(QObject):
 
         self.update_camera_devices()
 
-    def update_camera_devices(self):
+    def get_available_cameras_opencv(self) -> Dict:
+        return self.available_cameras_opencv
+
+    def update_camera_devices(self) -> None:
         self.view.ui.comboBox_image_source.clear()
         self.view.ui.comboBox_image_source.addItems(
             list(self.available_cameras_opencv.keys())
         )
         self.view.ui.comboBox_image_source.addItem("From File...")
 
-    def load_from_file_or_dir(self, path: str):
+    def load_from_file_or_dir(self) -> None:  # path: str
         options = QFileDialog.Options()
         file_dialog = QFileDialog()
         file_dialog.setFileMode(QFileDialog.AnyFile)

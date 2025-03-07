@@ -2,29 +2,41 @@ from track_almost_anything.api.processing.detection import (
     MPPoseDetection,
 )
 from track_almost_anything._logging import log_info, log_debug
-from .abstract_detection_thread import AbstractDetectionThread
+from .abstract_detection_thread import (
+    AbstractDetectionThread,
+)
 
 import cv2
 import time
+import queue
 
 
 class MediaPipePoseThread(AbstractDetectionThread):
-    def __init__(self, image_queue):
+    def __init__(self, image_queue: queue.Queue):
         super().__init__(image_queue=image_queue)
 
     def run(self):
         log_info("Model :: Workers :: MediaPipePoseThread: Detection started...")
-        img_width = 1280
-        img_height = 720
-        self.capture = cv2.VideoCapture(0)
-        self.capture.set(3, img_width)
-        self.capture.set(4, img_height)
-
         detector = MPPoseDetection()
+
+        self.request_new_image.emit()  # Request first image
         log_info("Model :: Workers :: MediaPipePoseThread: Starting loop...")
+
         while self.running:
-            # TODO: Replace with actual detection logic
-            success, image = self.capture.read()
+            try:
+                image = self.image_queue.get(timeout=1)  # timeout=1
+            except queue.Empty:
+                continue
+
+            if image is None:
+                log_info(
+                    "Model :: Workers :: MediaPipeHandsThread: Sequence Finished Pausing detections..."
+                )
+                self.paused = True
+                continue
+
+            # TODO: modify logic for returning results (image + results or simply results)
+            # Need to check what is feasible with Model :: SourceModel
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             results = detector.predict(image_rgb=image)
 
@@ -35,6 +47,7 @@ class MediaPipePoseThread(AbstractDetectionThread):
             detection_result = {"debug_image": debug_image}
 
             self.detection_result.emit(detection_result)
+            self.emit_new_image_request()
 
             while self.paused:
                 time.sleep(0.1)
@@ -43,5 +56,4 @@ class MediaPipePoseThread(AbstractDetectionThread):
         self.running = False
         self.quit()
         self.wait()
-        self.capture.release()
         log_info("Model :: Workers :: MediaPipePoseThread: Killing detection worker.")

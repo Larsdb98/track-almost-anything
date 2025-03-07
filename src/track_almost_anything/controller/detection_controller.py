@@ -2,9 +2,10 @@ from ..model import Model
 from ..view import View
 from .table_view_controller import TableViewController
 from .live_view_controller import LiveViewController
+from .source_controller import SourceController
 
 from ..api.processing.detection import DETECTION_FAMILIES, YOLO_CLASS_LABEL_DICT
-from track_almost_anything._logging import log_info, log_debug, log_error
+from track_almost_anything._logging import log_info, log_debug, log_error, log_warm
 
 import queue
 from PySide6.QtCore import QObject
@@ -18,11 +19,13 @@ class DetectionController(QObject):
     def __init__(
         self,
         live_view_controller: LiveViewController,
+        source_controller: SourceController,
         model: Model,
         view: View,
     ):
         super().__init__()
         self.live_view_controller = live_view_controller
+        self.source_controller = source_controller
         self.model = model
         self.view = view
 
@@ -97,6 +100,29 @@ class DetectionController(QObject):
         self.model.detection_model.detection_thread.detection_result.connect(
             self.handle_detection_result
         )
+        # Connect source to detection pipeline
+        source = self.view.ui.comboBox_image_source.currentText()
+        if source == "From File...":
+            if self.model.source_model.is_image_sequence_set():
+                log_info("Controller :: DetectionController: Image sequence is ready.")
+            elif self.model.source_model.is_video_config_set():
+                log_info("Controller :: DetectionController: Video file is ready.")
+
+            else:
+                log_warm("No image sequence or video has been selected yet")
+                self.source_controller.load_from_file_or_dir()
+        else:
+            available_cameras = self.source_controller.get_available_cameras_opencv()
+
+            # TODO: We should be able to choose the resolution.
+            self.model.source_model.setup_opencv_camera(
+                source=available_cameras[source], img_width=1280, img_height=720
+            )
+            log_info(f"Controller :: DetectionController: Using {source}.")
+
+        self.model.detection_model.detection_thread.request_new_image.connect(
+            self.model.source_model.request_new_image
+        )
         self.view.ui.button_pause.clicked.connect(
             self.model.detection_model.detection_thread.toggle_pause
         )
@@ -108,6 +134,7 @@ class DetectionController(QObject):
             self.model.detection_model.detection_thread.set_pause_status(paused=False)
 
         success = self.model.detection_model.stop_detection_process()
+        self.model.source_model.release_source()
         if success:
             self.view.ui.button_start.setEnabled(True)
             self.view.ui.button_stop.setEnabled(False)
@@ -115,9 +142,6 @@ class DetectionController(QObject):
             log_error(
                 "Controller :: DetectionController: Unable to stop current detection process."
             )
-
-    # def send_image(self, image: np.ndarray) -> None:
-    #     self.image_queue.put(image)
 
     # TODO: needs to be modified once detection outputs have been "uniformized"
     def handle_detection_result(self, result) -> None:

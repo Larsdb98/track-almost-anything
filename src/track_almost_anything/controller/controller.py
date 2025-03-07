@@ -23,6 +23,7 @@ class Controller:
 
         self.detection_controller = DetectionController(
             live_view_controller=self.live_view_controller,
+            source_controller=self.source_controller,
             model=self.model,
             view=self.view,
         )
